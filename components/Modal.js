@@ -1,12 +1,13 @@
 import React from "react";
+import { Modal, StyleSheet, View } from "react-native";
 import Icon from 'react-native-vector-icons/dist/FontAwesome';
-import { Modal as _Modal, StyleSheet, View } from "react-native";
 
 
-export default function Modal({style, children, setShow, show, onHide }) {
+export default _Modal = ({style, children, setShow, show, onHide }) => {
+
   return (
     <View style={[styles.centeredView]}>
-      <_Modal supportedOrientations={['portrait', 'landscape']}
+      <Modal supportedOrientations={['portrait', 'landscape']}
        animationType="fade" transparent={true} visible={show}>
         <View style={[styles.centeredView, ,{backgroundColor: '#6669'}]}>
           <View style={[styles.modalView,style]}>
@@ -14,7 +15,7 @@ export default function Modal({style, children, setShow, show, onHide }) {
             {children}
           </View>
         </View>
-      </_Modal>
+      </Modal>
     </View>
   );
 };

@@ -4,7 +4,7 @@ import Icon from 'react-native-vector-icons/dist/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
 
 
-const TopTab = ({ route2, children, route,  style, bgcolor = '#fff',color="#777", activeColor="#47f" }) => {
+const Drawer = ({ route2, children, route,  style, bgcolor = '#fff',color="#777", activeColor="#47f" }) => {
 
   const navigation = useNavigation()
 
@@ -80,4 +80,4 @@ const styles = StyleSheet.create({
 
 })
 
-export default TopTab
+export default Drawer

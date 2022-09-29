@@ -5,15 +5,12 @@ import Swiper from './Swiper'
 import yub from '../states/yub'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Icon5 from 'react-native-vector-icons/FontAwesome5';
-import { launchImageLibraryAsync as launchImageLibrary } from "react-native-image-picker";
-// import { useFocusEffect } from '@react-navigation/native'
+import { launchImageLibrary } from "react-native-image-picker";
 const newObj = new Proxy({}, yub);
+import { _scrollView } from '../screens/food/Home';
+import { useFocusEffect } from '@react-navigation/native';
 
 
-
-
-const _width = Dimensions.get('window').width;
-const _height = Dimensions.get('window').height;
 
 const Form = ({ f, e, p, cp, m, ch, c, t, pr, im, i, edit, s, gc,ph,
   title, setTitle, price, setPrice, phone, setPhone,
@@ -24,15 +21,13 @@ const Form = ({ f, e, p, cp, m, ch, c, t, pr, im, i, edit, s, gc,ph,
   setMessage, children, captcha, setCaptcha, host, checkText, setRemember, remember,
   star1, setstar1, star2, setstar2, star3, setstar3, star4, setstar4, star5, setstar5, allstar,
   setallstar,
-  fSwiper, eSwiper, cpSwiper, pSwiper, tSwiper, prSwiper, imSwiper,iSwiper,phSwiper,
   sizeY=1,top=25,
+  setOrientation, setwidth, setheight,
   fIconLeft,fIconRight,eIconLeft,eIconRight,pIconLeft,pIconRight,cpIconLeft,cpIconRight,
   tIconLeft,tIconRight,prIconLeft,prIconRight,iIconLeft,iIconRight,imIconLeft,imIconRight, phIconLeft,phIconRight
 }) => {
 
 
-  const [height, setheight] = useState(_height)
-  const [width, setwidth] = useState(_width)
 
 
   useEffect(() => {
@@ -65,16 +60,9 @@ const Form = ({ f, e, p, cp, m, ch, c, t, pr, im, i, edit, s, gc,ph,
 
 
 
-
-  // const [orientation, setOrientation] = useState("PORTRAIT");
-  // const [height, setheight] = useState(height1);
-  // const [width, setwidth] = useState(width1);
-
-
-
   Dimensions.addEventListener('change', ({ window: { width, height } }) => {
-    if (width < height) { setwidth(width); setheight(height) }
-    else { setwidth(width); setheight(height) }
+    if (width < height) { setOrientation("PORTRAIT"); setwidth(width); setheight(height) }
+    else { setOrientation("LANDSCAPE"); setwidth(width); setheight(height) }
   })
 
 
@@ -97,13 +85,11 @@ const Form = ({ f, e, p, cp, m, ch, c, t, pr, im, i, edit, s, gc,ph,
 
 
 
-  // useFocusEffect(useCallback(() => {
-  //   changeRand && setRand(parseInt(Math.random() * 9000 + 1000))
-  // }, [show2]))
-
-  useEffect(() => {
+  useFocusEffect(useCallback(() => {
     changeRand && setRand(parseInt(Math.random() * 9000 + 1000))
-  }, [show2])
+  }, [show2]))
+
+
 
 
   const [_fullname, set_Fullname] = useState()
@@ -158,15 +144,6 @@ const Form = ({ f, e, p, cp, m, ch, c, t, pr, im, i, edit, s, gc,ph,
   var inf = i ? newObj.info === info : true
 
   var ky = gc ? show1 : true
-
-  // console.log('title',title);
-  // console.log('newObj.title ',newObj.title );
-
-
-
-  // let ChangeView = orientation === "PORTRAIT" ? View : ScrollView
-
-  // let styleContainer = orientation === "PORTRAIT" ? styles.viewContainer : styles.container
 
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -340,8 +317,6 @@ const Form = ({ f, e, p, cp, m, ch, c, t, pr, im, i, edit, s, gc,ph,
 
 
 
-
-
   const fadeOut5 = () => {
     Animated.sequence([
       Animated.timing(fadeAnim5, {
@@ -489,47 +464,19 @@ const Form = ({ f, e, p, cp, m, ch, c, t, pr, im, i, edit, s, gc,ph,
 
 
 
-
-
-  const handleOpenPress = useCallback(() => { $recaptcha.current.open() }, []);
-  const handleClosePress = useCallback(() => { $recaptcha.current.close() }, []);
-
-
   useEffect(() => {
     gc && setshow1(key)
   }, [change])
 
 
-   let _scrollView = (props) => {  
-    let ChangeStyle = (width > height) ? { marginBottom: 10, flex: 1 } : { flex: 1 }
-    return (
-      <ScrollView style={[ChangeStyle]} contentContainerStyle={{ flexGrow: 1, minWidth: '100%' }} {...props} >
-        {props.children}
-      </ScrollView>
-    )
-  }
-
-
-
-
 
   return (
     
-    // <ChangeView style={[{height: '100%',minWidth:'100%'}]}>
     <_scrollView style={{backgroundColor:'#f0f0f0'}} >
 
     <View style={[styles.viewContainer,{paddingTop:top},style]} >
     
       <View style={[{transform:[{scaleY:sizeY}] , paddingHorizontal:20}]}>
-    
-    
-
-    
-
-
-    
-
-
 
 
          {
@@ -537,7 +484,7 @@ const Form = ({ f, e, p, cp, m, ch, c, t, pr, im, i, edit, s, gc,ph,
            <KeyboardAvoidingView behavior={"height"} style={{flex:1}}>
            <Animated.View style={[styles.viewInput,{minHeight:90}, { marginBottom: 5}]} >
                <Swiper 
-               cansel={fSwiper?false:true} 
+               cansel={(fIconLeft || fIconRight)?false:true} 
                style={{ height:'100%',marginBottom:20,paddingBottom:20}} 
                styleRightIcon={{ top: 37 }}
                styleLeftIcon={{ top: 37 }}
@@ -568,9 +515,6 @@ const Form = ({ f, e, p, cp, m, ch, c, t, pr, im, i, edit, s, gc,ph,
       }
 
   
-        
-
-
 
        
 
@@ -580,7 +524,7 @@ const Form = ({ f, e, p, cp, m, ch, c, t, pr, im, i, edit, s, gc,ph,
             <KeyboardAvoidingView behavior={"height"} style={{flex:1}}>
         <Animated.View style={[styles.viewInput,{minHeight:90}, { marginBottom: 5 },
         !eml && { transform: [{ translateX: fadeAnim2 }] }]} >
-          <Swiper cansel={eSwiper?false:true} style={{ height:'100%',marginBottom:20,paddingBottom:20}}
+          <Swiper cansel={(eIconLeft || eIconRight)?false:true} style={{ height:'100%',marginBottom:20,paddingBottom:20}}
            styleRightIcon={{ top: 37 }}
              styleLeftIcon={{ top: 37 }}
              iconLeft={eIconLeft}
@@ -613,15 +557,11 @@ const Form = ({ f, e, p, cp, m, ch, c, t, pr, im, i, edit, s, gc,ph,
 
 
 
-
-
-
-
     {ph &&
             <KeyboardAvoidingView behavior={"height"} style={{flex:1}}>
         <Animated.View style={[styles.viewInput,{minHeight:90}, { marginBottom: 5 },
         !pon && { transform: [{ translateX: fadeAnimPh }] }]} >
-          <Swiper cansel={phSwiper?false:true} style={{ height:'100%',marginBottom:20,paddingBottom:20}}
+          <Swiper cansel={(phIconLeft || phIconRight)?false:true} style={{ height:'100%',marginBottom:20,paddingBottom:20}}
            styleRightIcon={{ top: 37 }}
              styleLeftIcon={{ top: 37 }}
              iconLeft={phIconLeft}
@@ -660,7 +600,7 @@ const Form = ({ f, e, p, cp, m, ch, c, t, pr, im, i, edit, s, gc,ph,
         {p && 
                 <KeyboardAvoidingView behavior={"height"} style={{flex:1}}>
         <Animated.View style={[styles.viewInput,{minHeight:90},{marginBottom: 5}]} >
-        <Swiper cansel={pSwiper?false:true} style={{ height:'100%',marginBottom:20,paddingBottom:20}}
+        <Swiper cansel={(pIconLeft || pIconRight)?false:true} style={{ height:'100%',marginBottom:20,paddingBottom:20}}
          styleRightIcon={{ top: 37 }}
           styleLeftIcon={{ top: 37 }}
           iconLeft={pIconLeft} 
@@ -696,13 +636,10 @@ const Form = ({ f, e, p, cp, m, ch, c, t, pr, im, i, edit, s, gc,ph,
 
 
 
-
-
-
         {cp && 
         <KeyboardAvoidingView behavior={"height"} style={{flex:1}}>
         <Animated.View style={[styles.viewInput,{minHeight:90}, { marginBottom: 5 }]} >
-        <Swiper cansel={cpSwiper?false:true} style={{ height:'100%',marginBottom:20,paddingBottom:20}}
+        <Swiper cansel={(cpIconLeft || cpIconRight)?false:true} style={{ height:'100%',marginBottom:20,paddingBottom:20}}
          styleRightIcon={{ top: 37 }}
           styleLeftIcon={{ top: 37 }}
           iconLeft={cpIconLeft} 
@@ -737,25 +674,10 @@ const Form = ({ f, e, p, cp, m, ch, c, t, pr, im, i, edit, s, gc,ph,
 
 
 
-    {/* <KeyboardAvoidingView behavior={"height"} style={{flex:1}}>
-      <Pressable style={{flex:1}} onPress={Keyboard.dismiss}>
-        <View style={styles.inner}>
-          <TextInput placeholder="Username" style={styles.textInput22} />
-        </View>
-      </Pressable>
-    </KeyboardAvoidingView> */}
-
-
-
-
-
-
-
-
         {t && 
                 <KeyboardAvoidingView behavior={"height"} style={{flex:1}}>
         <Animated.View style={[styles.viewInput,{minHeight:90}, { marginBottom: 5 }]} >
-        <Swiper cansel={tSwiper?false:true} style={{ height:'100%',marginBottom:20,paddingBottom:20}}
+        <Swiper cansel={(tIconLeft || tIconRight)?false:true} style={{ height:'100%',marginBottom:20,paddingBottom:20}}
          styleRightIcon={{ top: 37 }}
           styleLeftIcon={{ top: 37 }}
           iconLeft={tIconLeft} 
@@ -791,13 +713,11 @@ const Form = ({ f, e, p, cp, m, ch, c, t, pr, im, i, edit, s, gc,ph,
 
 
 
-
-
         {pr && 
         <KeyboardAvoidingView behavior={"height"} style={{flex:1}}>
         <Animated.View style={[styles.viewInput,{minHeight:90}, { marginBottom: 5 }, 
           !prc && { transform: [{ translateX: fadeAnim6 }] }]} >
-       <Swiper cansel={prSwiper?false:true} style={{ height:'100%',marginBottom:20,paddingBottom:20}}
+       <Swiper cansel={(prIconLeft || prIconRight)?false:true} style={{ height:'100%',marginBottom:20,paddingBottom:20}}
          styleRightIcon={{ top: 37 }}
           styleLeftIcon={{ top: 37 }}
           iconLeft={prIconLeft} 
@@ -828,15 +748,10 @@ const Form = ({ f, e, p, cp, m, ch, c, t, pr, im, i, edit, s, gc,ph,
 
 
 
-
-
-
-
-
         {im && 
         <View style={{flex:1}}>
         <Animated.View style={[styles.viewInput,{minHeight:90}, { marginBottom: 5 }]} >
-        <Swiper cansel={imSwiper?false:true} style={{ height:'100%',marginBottom:20,paddingBottom:20}}
+        <Swiper cansel={(imIconLeft || imIconRight)?false:true} style={{ height:'100%',marginBottom:20,paddingBottom:20}}
          styleRightIcon={{ top: 37 }}
           styleLeftIcon={{ top: 37 }}
           iconLeft={imIconLeft} 
@@ -873,13 +788,10 @@ const Form = ({ f, e, p, cp, m, ch, c, t, pr, im, i, edit, s, gc,ph,
 
 
 
-
-
-
         {i && 
         <KeyboardAvoidingView behavior={"height"} style={{flex:1}}>
         <Animated.View style={[styles.viewInput,{minHeight:90}, { marginBottom: 5 }]} >
-        <Swiper cansel={iSwiper?false:true} style={{ height:'100%',marginBottom:20,paddingBottom:20}}
+        <Swiper cansel={(iIconLeft || iIconRight)?false:true} style={{ height:'100%',marginBottom:20,paddingBottom:20}}
          styleRightIcon={{ top: 37 }}
           styleLeftIcon={{ top: 37 }}
           iconLeft={iIconLeft} 
@@ -937,11 +849,12 @@ const Form = ({ f, e, p, cp, m, ch, c, t, pr, im, i, edit, s, gc,ph,
         }
 
 
-        {ch &&
+
+{ch &&
         <View behavior={"height"} style={{flex:.5,justifyContent:'center'}}>
           <View style={{ marginVertical: 10 }} >
             <View style={[styles.viewCheckbox, { flexGrow: .4, maxHeight: 20 }]}>
-              <CheckBox show={show} onPress={() => { !checkText && setShow(!show); remember && setRemember(!remember) }} />
+              <CheckBox show={!checkText?show:remember} onPress={() => { !checkText && setShow(!show); checkText && setRemember(!remember) }} />
               <Text onPress={(e) => console.log(e.nativeEvent.text)} style={{ marginLeft: 11 }} >{checkText ? checkText : "موافقت با قوانین"}</Text>
             </View>
             {_checkbox && show == false && <Text style={{ color: 'red', alignSelf: 'flex-start' }} >پرکردن فیلد الزامی هست</Text>}
@@ -949,9 +862,6 @@ const Form = ({ f, e, p, cp, m, ch, c, t, pr, im, i, edit, s, gc,ph,
         </View>
             }
 
-        {/* password margin */}
-
-        {/* // یجوری حالت تابعی درست کن برای کامپوننت ها که وقتی میخای هرکدوم یه رف و ایدی منحصر داشته باشه */}
 
         {c &&
           <>
@@ -1102,11 +1012,6 @@ const Form = ({ f, e, p, cp, m, ch, c, t, pr, im, i, edit, s, gc,ph,
 
 
 
-
-
-
-
-      
 
 
 

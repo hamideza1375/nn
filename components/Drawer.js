@@ -1,21 +1,11 @@
 import { useNavigation } from '@react-navigation/native';
-import React, { useRef, useState } from 'react'
+import React, { useRef } from 'react'
 import { Dimensions, View, Text, StyleSheet, Animated, Pressable } from 'react-native'
 import Icon from 'react-native-vector-icons/dist/FontAwesome5';
 
-const _width = Dimensions.get('window').width;
-
+const width = Dimensions.get('window').width;
 
 const Drawer = ({ route2, children, route, bgcolor = '#fff', style, icon }) => {
-
-  const [width, setwidth] = useState(_width)
-
-  Dimensions.addEventListener('change', ({ window: { width, height } }) => {
-    if (width < height) { setwidth(width) }
-    else { setwidth(width) }
-  })
-
-
   const fadeAnim = useRef(new Animated.Value(-width * 2)).current;
   shadowRef=useRef()
   const navigation = useNavigation()
@@ -51,6 +41,7 @@ const Drawer = ({ route2, children, route, bgcolor = '#fff', style, icon }) => {
   })
 
 
+  // console.log(route2);
 
   return (
     <View style={styles.container} >
@@ -81,6 +72,7 @@ const Drawer = ({ route2, children, route, bgcolor = '#fff', style, icon }) => {
               </Pressable>
             </View>
           ))}
+
 
         </View>
       </Animated.View>

@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import React, { useCallback, useEffect } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 const range = (from, to) => {
@@ -10,14 +11,14 @@ const range = (from, to) => {
 }
 
 function Pagination(props) {
-  const { currentPage, setcurrent, setcurrentPage, pageLimit, pageNeighbours = 1, page, setpage, food, ass} = props;
+  const { currentPage, id,currentMap, setcurrent, setcurrentPage, pageLimit, pageNeighbours = 1, page, setpage, food, ass } = props;
 
-    
+
   const fetchPageNumbers = () => {
     const totalPages = Math.ceil(food.length / pageLimit);
     if (totalPages > ((pageNeighbours * 2) + 3) + 2) {
       const startPage = Math.max(2, currentPage - pageNeighbours);
-      const endPage =  currentPage + pageNeighbours
+      const endPage = currentPage + pageNeighbours
       let pages = range(startPage, endPage);
       if (startPage > 2 && !(totalPages - endPage) > 1) {
         const extraPages = range(startPage - ((pageNeighbours * 2) + 3) - (pages.length + 1), startPage - 1);
@@ -38,12 +39,32 @@ function Pagination(props) {
 
 
   const gotoPage = (page) => {
-    setcurrentPage(page);
-    setcurrent( food.filter((f,i)=> (
-      i >= (page - 1) * pageLimit) && 
-      (i < (page - 1) * pageLimit + pageLimit))
-     )
+  setcurrentPage(page);
+  setcurrent( food.filter((f,i)=> (
+    i >= (page - 1) * pageLimit) && 
+    (i < (page - 1) * pageLimit + pageLimit))
+   )
   }
+
+
+  // const gotoPage = (page) => {
+  //   setcurrentPage(page);
+  //   if (currentMap && id) {
+  //     currentMap.set(id,
+  //       food.filter((f, i) => (
+  //       i >= (page - 1) * pageLimit) &&
+  //       (i < (page - 1) * pageLimit + pageLimit))
+      
+  //   )}
+  //   else {
+  //     setcurrentPage(page);
+  //     setcurrent(food.filter((f, i) => (
+  //       i >= (page - 1) * pageLimit) &&
+  //       (i < (page - 1) * pageLimit + pageLimit))
+  //     )
+  //   }
+  // }
+
 
   const handleClick = (page) => gotoPage(page);
 
@@ -52,40 +73,41 @@ function Pagination(props) {
   const handleMoveRight = () => gotoPage(currentPage + (pageNeighbours * 2) + 1);
 
 
-  useEffect(() => {gotoPage(page)}, [ass])
+  useFocusEffect(useCallback(() => { gotoPage(page) }, [ass]))
+
 
 
   const pages = fetchPageNumbers();
   let total = (food.length / pageLimit)
-  if (total == 1) return null;
-  
-    return (
-      <View style={styles.pagination}>
-        {pages.map((page, index) => {
+  if (total <= 1) return null;
 
-          if (page[0] === 'LEFT') return (
-            <Pressable onPressIn={() => { setpage(page[1]) }}
-              onPress={() => setpage(page => page > 2 && handleMoveLeft())} key={index} style={[styles.pageitem, { width: 50 }]}>
-              <Text style={{ fontSize: 25, top: -1, color: '#37e' }}>»</Text>
-            </Pressable>
-          );
+  return (
+    <View style={styles.pagination}>
+      {pages.map((page, index) => {
 
-          if (page[0] === 'RIGHT') return (
-            <Pressable onPressIn={() => { setpage(page[1]) }} onPress={() => handleMoveRight()} key={index} style={[styles.pageitem, { width: 50 }]}>
-              <Text style={{ fontSize: 25, top: -1, color: '#37e' }} >«</Text>
-            </Pressable>
-          );
+        if (page[0] === 'LEFT') return (
+          <Pressable onPressIn={() => { setpage(page[1]) }}
+            onPress={() => setpage(page => page > 2 && handleMoveLeft())} key={index} style={[styles.pageitem, { width: 50 }]}>
+            <Text style={{ fontSize: 25, top: -1, color: '#37e' }}>»</Text>
+          </Pressable>
+        );
 
-          return (
-            <Pressable onPressIn={() => { setpage(page) }} onPress={() => handleClick(page)} key={index} style={[styles.pageitem, { backgroundColor: currentPage === page ? '#6cf' : '#efffff33' }]}>
-              <Text style={[styles.pagelink, { color: currentPage === page ? '#24e' : '#555' }]} >{page}</Text>
-            </Pressable>
-          );
+        if (page[0] === 'RIGHT') return (
+          <Pressable onPressIn={() => { setpage(page[1]) }} onPress={() => handleMoveRight()} key={index} style={[styles.pageitem, { width: 50 }]}>
+            <Text style={{ fontSize: 25, top: -1, color: '#37e' }} >«</Text>
+          </Pressable>
+        );
 
-        })}
-      </View>
-    );
-  
+        return (
+          <Pressable onPressIn={() => { setpage(page) }} onPress={() => handleClick(page)} key={index} style={[styles.pageitem, { backgroundColor: currentPage === page ? '#6cf' : '#efffff33' }]}>
+            <Text style={[styles.pagelink, { color: currentPage === page ? '#24e' : '#555' }]} >{page}</Text>
+          </Pressable>
+        );
+
+      })}
+    </View>
+  );
+
 
 }
 
@@ -94,23 +116,23 @@ export default Pagination
 
 
 const styles = StyleSheet.create({
-  pagination:{
+  pagination: {
     flexDirection: 'row',
     width: 315,
     height: 45,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 'auto',
-  
+
   },
-  pageitem:{
+  pageitem: {
     width: 44,
     height: 44,
     justifyContent: 'space-evenly',
     alignItems: 'center',
     flexDirection: 'row',
     borderWidth: 1,
-    borderColor:'rgb(197, 192, 192)',
+    borderColor: 'rgb(197, 192, 192)',
     backgroundColor: '#efffff88',
     borderRadius: 3,
   }
