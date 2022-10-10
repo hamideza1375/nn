@@ -126,8 +126,8 @@
     }
     if (propName === 'info') {
       if (typeof target[propName] === 'string') {
-        if (target[propName].length < 15) {
-          return ('توضیحات نباید کوچک تر از 15 کلمه باشد')
+        if (target[propName].length < 10) {
+          return ('توضیحات نباید کوچک تر از 10 کلمه باشد')
         }
         else {
           return target[propName]

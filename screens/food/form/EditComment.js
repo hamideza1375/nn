@@ -9,5 +9,5 @@ export const EditComment = ({ id3, props: p }) => {
   _food.getEditComment(id3);
   const navigation = useNavigation();
   useEffect(() => navigation.setOptions({ headerRight: () => <></> }), [showForm, id3]);
-  return <Form m s style={{ paddingTop: 30, height:'50%' }} {...p} onPress={() => _food.editComment(id3)} />
+  return <Form bgcolor='#fff' m s {...p} onPress={() => _food.editComment(id3)} />
 };

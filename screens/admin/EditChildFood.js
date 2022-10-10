@@ -2,7 +2,7 @@ import React from 'react'
 import { View } from 'react-native';
 import Form from '../../Components/Form';
 import { adminState } from '../../state/adminState';
-import Title from '../../states/setTitle';
+import Title from '../../utils/setTitle';
 
 const EditChildFood = (p) => {
   Title()

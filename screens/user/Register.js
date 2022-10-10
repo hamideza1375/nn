@@ -1,22 +1,20 @@
 import React from 'react';
-import BottomTab from '../../Components/BottomTab'
-import TopTab from '../../Components/TopTab'
 import Form from '../../Components/Form'
 import { userState } from '../../state/userState';
-import { topUser, bottomProfile } from '../../states/top-bottom';
+
 
 const Register = (p) => {
-  const bottom = bottomProfile(p)
   _user = new userState(p)
   const registerSend = () => _user.registerSendAction();
+  const sendCode = () => _user.registerSendCode();
+
 
   return (
-    <BottomTab route={p.route.name} route2={bottom} >
-      <TopTab route={p.route.name} route2={topUser} >
-        <Form f p ch ph onPress={() => registerSend()} {...p} >
-        </Form>
-      </TopTab>
-    </BottomTab>
+      <>
+        {!p.changeRegister ?<Form f p ch ph onPress={() => registerSend()} {...p} />
+        :
+        <Form $code onPress={() => sendCode()} {...p} />}
+      </>
   );
 };
 export default Register

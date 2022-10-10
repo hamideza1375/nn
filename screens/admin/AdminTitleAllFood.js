@@ -21,7 +21,7 @@ const AdminTitleAllFood = function (p) {
         header={['edit','دیدن','پاک کردن', 'عنوان']}
         body={['edit','دیدن','پاک کردن', 'title' ]}
         btn3={'#d33'}
-        btn3onClick={()=>{ p.setShowModal(true); p.setid(p.foods[p.$food[1]]._id) }}
+        btn3onClick={()=>{ p.setshowModal(true); p.setid(p.foods[p.$food[1]]._id) }}
         btn2={'#07d'}
         btn2onClick={()=>{p.navigation.navigate("AdminChildTable", { id: p.foods[p.$food[1]]._id, title : p.foods[p.$food[1]].title })}}
         btn1={'#2b3'}
@@ -31,6 +31,8 @@ const AdminTitleAllFood = function (p) {
         setobject={p.set$food}
         />
       }
+
+
         <Button mv={8} onPress={() => p.navigation.navigate("CreateTitleAllFood")}>ساخت دسته ی اغذیه</Button>
         <Button mv={8} onPress={() => p.navigation.navigate('AddAdmin')}>افزودن به گروه ادمین ها</Button>
         <Button mv={8} onPress={() => p.navigation.navigate('Notifee')}>ارسال نوتیفیکیشن</Button>
@@ -38,7 +40,8 @@ const AdminTitleAllFood = function (p) {
         <Button mv={8} onPress={() => p.navigation.navigate("Address")} >address</Button>
         <Button mv={8} onPress={() => p.navigation.navigate("DeleteAdmin")} >DeleteAdmin</Button>
         <Button mv={8} onPress={() => p.navigation.navigate("DeleteAllAddress")} >DeleteAllAddress</Button>
-        <Modal showModal={p.showModal} setShowModal={p.setShowModal} id={p.id} message={ 'حذف شود؟ ' + " (" + p.foods[p.$food[1]]?.title + ')' } />
+        <Button mv={8} onPress={() => p.navigation.navigate("ChangeAdmin")} >ChangeAdmin</Button>
+        <Modal showModal={p.showModal} setshowModal={p.setshowModal} id={p.id} message={ 'حذف شود؟ ' + " (" + p.foods[p.$food[1]]?.title + ')' } />
       </View>
     </ScrollView>
   )

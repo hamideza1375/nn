@@ -1,25 +1,43 @@
 import React, { useCallback, useEffect, useMemo } from 'react'
 import { BackHandler, ToastAndroid, Platform, Alert, Dimensions } from 'react-native'
 import { useFocusEffect, useRoute } from '@react-navigation/native'
-import { editcomment, deletecomment, getallchildfood, getfoods, getcommentchildfood, createcommentchildfood, getsinglechildfood, getcommentsinglefood, payment, getAllAddress, deleteAllAddress, deleteAddress, getProfile, notification } from '../services/foodService'
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import { getSingleTitleFoods,editcomment, deletecomment, getallchildfood, getfoods, getcommentchildfood, createcommentchildfood, getsinglechildfood, getcommentsinglefood, payment, getProfile, notification } from '../services/foodService'
+import localStorage from '@react-native-async-storage/async-storage'
 import { header } from "../header"
-import { create } from '../states/notification'
+import { create } from '../utils/notification'
 
 
-export function foodState(props) {
-
+export function foodState(p) {
   const route = useRoute()
   let id = route.params && route.params.id
   let id2 = route.params && route.params.id2
 
 
-  this.setOrientation = () => {
+  this.setorientation = () => {
     Dimensions.addEventListener('change', ({ window: { width, height } }) => {
-      width < height ? props.setOrientation("PORTRAIT") : props.setOrientation("LANDSCAPE")
-      props.setwidth(width); props.setheight(height)
+      width < height ? p.setorientation("PORTRAIT") : p.setorientation("LANDSCAPE")
+      p.setwidth(width); p.setheight(height)
     })
   }
+
+
+
+    // EditFood
+    this.getSingleTitleFoods = async () => {
+      useEffect(() => {
+        (async () => {
+          const { data } = await getSingleTitleFoods(id)
+          p.settitle(data.title)
+        })()
+  
+        return () => {
+          p.settitle('')
+        }
+      }, [])
+    }
+  
+
+
 
   this.getTitleFood = show => {
     useFocusEffect(useCallback(() => {
@@ -27,8 +45,8 @@ export function foodState(props) {
         (async () => {
           try {
             let { data } = await getfoods()
-            if (data.length !== props.foods)
-              props.setfoods(data)
+            if (data.length !== p.foods)
+              p.setfoods(data)
           } catch (err) { console.log(err) }
         })()
       }, 100);
@@ -40,14 +58,14 @@ export function foodState(props) {
 
 
   this.getChildFood = async () => {
-    useEffect(() => {
+    useFocusEffect(useCallback(() => {
       (async () => {
         try {
           var d = []
           let { data } = await getallchildfood()
           let w = data.child.filter((ch) => ch.refId == route.params.id)
           for (let k in w) {
-            let l = props.map.get(w[k]._id)
+            let l = p.map.get(w[k]._id)
 
             if (l !== undefined) {
               let f = JSON.parse(l)
@@ -58,20 +76,22 @@ export function foodState(props) {
               d.push(w[k])
             }
           }
-          props.foodMap.set(route.params.id, d)
-          props.setfood2(d)
+          p.foodMap.set(route.params.id, d)
+          p.setfood2(d)
+          // props.setcurrent(d.filter((f, i) => (i >= (props.page - 1) * props.pageLimit) && (i < (props.page - 1) * props.pageLimit + props.pageLimit)))
+
         }
         catch (err) { console.log(err); }
       })()
-    }, [])
+    }, []))
 
     useFocusEffect(useCallback(() => {
       return () => {
-        props.setcurrentPage(1)
-        props.setpage(1);
-        props.setcurrent([])
-        props.setfood2([])
-        props.settextSearch('')
+        p.setcurrentPage(1)
+        p.setpage(1);
+        p.setcurrent([])
+        p.setfood2([])
+        p.settextSearch('')
       }
     }, []))
 
@@ -86,19 +106,19 @@ export function foodState(props) {
         try {
           let { data } = await getallchildfood()
           let w = data.child.filter((ch) => ch.refId == route.params.id)
-          props.foodMap.set(route.params.id, w)
-          props.setfood2(w)
-          props.setcurrent(w.filter((f, i) => (i >= (props.page - 1) * props.pageLimit) && (i < (props.page - 1) * props.pageLimit + props.pageLimit)))
+          p.foodMap.set(route.params.id, w)
+          p.setfood2(w)
+          p.setcurrent(w.filter((f, i) => (i >= (p.page - 1) * p.pageLimit) && (i < (p.page - 1) * p.pageLimit + p.pageLimit)))
         }
         catch (err) { console.log(err); }
       })()
-    }, [props.changeFood]))
+    }, [p.changeFood]))
 
     useFocusEffect(useCallback(() => {
       return () => {
-        props.setcurrentPage(1)
-        props.setpage(1);
-        props.setcurrent([])
+        p.setcurrentPage(1)
+        p.setpage(1);
+        p.setcurrent([])
       }
     }, []))
 
@@ -109,24 +129,24 @@ export function foodState(props) {
 
 
   this.sercher = (textSearch) => {
-    props.foodMap.set(route.params.id, props.food2.filter((f) => f.title.includes(textSearch)))
-    let fd = props.food2.filter(f => f.title.includes(textSearch))
+    p.foodMap.set(route.params.id, p.food2.filter((f) => f.title.includes(textSearch)))
+    let fd = p.food2.filter(f => f.title.includes(textSearch))
     if (fd) {
       const currentPage = Math.max(0, Math.min(1, fd.length))
-      const offset = (currentPage - 1) * props.pageLimit
-      const currentCountries = fd.slice(offset, offset + props.pageLimit)
-      props.setcurrent(currentCountries)
-      props.setcurrentPage(currentPage)
-      props.settextSearch('')
+      const offset = (currentPage - 1) * p.pageLimit
+      const currentCountries = fd.slice(offset, offset + p.pageLimit)
+      p.setcurrent(currentCountries)
+      p.setcurrentPage(currentPage)
+      p.settextSearch('')
     }
   }
 
 
   this.foodAsc = (setpage) => {
-    let foodMap = props.foodMap.get(route.params.id)
+    let foodMap = p.foodMap.get(route.params.id)
     if (foodMap) {
-      props.foodMap.set(route.params.id, foodMap.sort((a, b) => a.price - b.price))
-      props.setass(!props.ass)
+      p.foodMap.set(route.params.id, foodMap.sort((a, b) => a.price - b.price))
+      p.setass(!p.ass)
       setpage(1)
     }
   }
@@ -134,9 +154,9 @@ export function foodState(props) {
 
 
   this.foodDesc = (setpage) => {
-    let foodMap = props.foodMap.get(route.params.id)
-    props.foodMap.set(route.params.id, foodMap.sort((a, b) => b['price'] - a['price']))
-    props.setass(!props.ass)
+    let foodMap = p.foodMap.get(route.params.id)
+    p.foodMap.set(route.params.id, foodMap.sort((a, b) => b['price'] - a['price']))
+    p.setass(!p.ass)
     setpage(1)
   }
 
@@ -146,118 +166,65 @@ export function foodState(props) {
     useFocusEffect(useCallback(() => {
       (async () => {
         let all = []
-        for (let i of props.allfood) { all.push(i.total) }
+        for (let i of p.allfood) { all.push(i.total) }
         if (all.length) {
           const su = all.reduce((total, number) => total + number)
-          props.setallprice(su < 0 ? 0 : su)
-          props.map.set('allprice', JSON.stringify(su))
+          p.setallprice(su < 0 ? 0 : su)
+          p.map.set('allprice', JSON.stringify(su))
         }
       })()
-    }, [props.show1]))
+    }, [p.show1]))
   }
 
-
-
-  this.AllPrice = (inputPrice) => {
-    try {
-      let rt = String(inputPrice)
-      let k = ''
-      for (let i = 0; i < rt.length; i++) {
-        k +=
-          rt.length == 4 ?
-            (i == 0 ?
-              rt[i] + ','
-              :
-              rt[i])
-            :
-            rt.length == 5 ?
-              (i == 1 ?
-                rt[i] + ','
-                :
-                rt[i])
-              :
-              rt.length == 7 ?
-                (i == 0 || i == 3
-                  ? rt[i] + ','
-                  : rt[i])
-                :
-                rt.length == 8 ?
-                  (i == 1 || i == 4
-                    ? rt[i] + ','
-                    : rt[i])
-                  :
-                  rt.length == 9 ?
-                    (i == 2 || i == 5
-                      ? rt[i] + ','
-                      : rt[i])
-                    :
-                    rt.length == 10 ?
-                      (i == 0 || i == 3 || i == 6
-                        ? rt[i] + ','
-                        : rt[i])
-                      :
-                      rt.length == 11 ?
-                        (i == 1 || i == 4 || i == 7
-                          ? rt[i] + ','
-                          : rt[i])
-                        :
-                        i == 2
-                          ? rt[i] + ','
-                          : rt[i]
-      }
-      return k
-    }
-    catch (err) { console.log(err) }
-  }
 
 
 
   this.plustNum = async (inde, item, setpage, page) => {
     if (route.name == 'ChildFood') {
-      let h = [...props.foodMap.get(route.params.id)]
-      let index = props.foodMap.get(route.params.id).findIndex(f => f._id == item._id)
+      let h = [...p.foodMap.get(route.params.id)]
+      let index = p.foodMap.get(route.params.id).findIndex(f => f._id == item._id)
       h[index].num = h[index].num + 1
       h[index].total = item.price * h[index].num
-      let allfood = [...props.allfood]
+      let allfood = [...p.allfood]
       let fnd = allfood.findIndex((f) => f._id === item._id)
       if (!allfood[fnd]) {
         allfood.push(h[index])
-        props.setallfood(allfood)
+        p.setallfood(allfood)
       }
       else {
         allfood[fnd] = h[index]
-        props.setallfood(allfood)
+        p.setallfood(allfood)
       }
-      props.map.set(item._id + '1', item._id)
-      props.map.set(item._id, JSON.stringify(h[index]))
-      let tit = props.map.get(item._id + '1')
-      let gg = props.totalTitle.find((t) => t == item._id)
+      p.map.set(item._id + '1', item._id)
+      p.map.set(item._id, JSON.stringify(h[index]))
+      let tit = p.map.get(item._id + '1')
+      let gg = p.totalTitle.find((t) => t == item._id)
       console.log('tit', gg);
-      if (!gg) props.settotalTitle((t) => { return t.concat(tit) })
-      console.log('props.settotalTitle', props.totalTitle);
-      props.foodMap.set(route.params.id, h)
+      if (!gg) p.settotalTitle((t) => { return t.concat(tit) })
+      console.log('props.settotalTitle', p.totalTitle);
+      p.foodMap.set(route.params.id, h)
 
       setpage(page)
-      const offset = (page - 1) * props.pageLimit
-      const currentCountries = h.slice(offset, offset + props.pageLimit)
-      props.setcurrent(currentCountries)
+      const offset = (page - 1) * p.pageLimit
+      const currentCountries = h.slice(offset, offset + p.pageLimit)
+      p.setcurrent(currentCountries)
       setpage(page)
 
-      props.setshow1(!props.show1)
+      p.setshow1(!p.show1)
     }
     if (route.name == 'FinallFoodPayment') {
-      let h = [...props.allfood]
+      let h = [...p.allfood]
       let index = h.findIndex(f => f._id == item._id)
       h[index].num = h[index].num + 1
       h[index].total = item.price * h[index].num
-      props.map.set(item._id, JSON.stringify(h[index]))
+      p.map.set(item._id, JSON.stringify(h[index]))
 
-      let f = props.foodMap.get(h[index].refId)
+      let f = p.foodMap.get(h[index].refId)
       let fIndex = f.findIndex((f) => (f._id === h[index]._id))
       f[fIndex].num = h[index].num
-      props.foodMap.set(h[index].refId, f)
+      p.foodMap.set(h[index].refId, f)
 
-      props.setshow1(!props.show1)
+      p.setshow1(!p.show1)
     }
 
   }
@@ -267,56 +234,56 @@ export function foodState(props) {
 
   this.minusNum = async (inde, item, setpage, page) => {
     if (route.name == 'ChildFood') {
-      let h = [...props.foodMap.get(route.params.id)]
-      let index = props.foodMap.get(route.params.id).findIndex(f => f._id == item._id)
+      let h = [...p.foodMap.get(route.params.id)]
+      let index = p.foodMap.get(route.params.id).findIndex(f => f._id == item._id)
       h[index].num = h[index].num - 1
       h[index].total = item.price * h[index].num
-      let allfood = [...props.allfood]
+      let allfood = [...p.allfood]
       let fnd = allfood.findIndex((f) => f._id === item._id)
       if (!allfood[fnd]) {
         allfood.push(h[index])
-        props.setallfood(allfood)
+        p.setallfood(allfood)
       }
       else {
         allfood[fnd] = h[index]
-        props.setallfood(allfood)
+        p.setallfood(allfood)
       }
-      props.map.set(item._id + '1', item._id)
+      p.map.set(item._id + '1', item._id)
 
-      props.map.set(item._id, JSON.stringify(h[index]))
+      p.map.set(item._id, JSON.stringify(h[index]))
       if (h[index].num == 0) {
-        let gg = props.totalTitle.filter((t) => t != item._id)
-        props.settotalTitle(gg)
-        props.map.delete(item._id + '1')
+        let gg = p.totalTitle.filter((t) => t != item._id)
+        p.settotalTitle(gg)
+        p.map.delete(item._id + '1')
       }
-      props.foodMap.set(route.params.id, h)
+      p.foodMap.set(route.params.id, h)
 
       setpage(page)
-      const offset = (page - 1) * props.pageLimit
-      const currentCountries = h.slice(offset, offset + props.pageLimit)
-      props.setcurrent(currentCountries)
+      const offset = (page - 1) * p.pageLimit
+      const currentCountries = h.slice(offset, offset + p.pageLimit)
+      p.setcurrent(currentCountries)
       setpage(page)
 
 
-      props.setshow1(!props.show1)
+      p.setshow1(!p.show1)
     }
     if (route.name == 'FinallFoodPayment') {
-      let h = [...props.allfood]
+      let h = [...p.allfood]
       let index = h.findIndex(f => f._id == item._id)
       h[index].num = h[index].num - 1
       h[index].total = item.price * h[index].num
-      props.map.set(item._id, JSON.stringify(h[index]))
+      p.map.set(item._id, JSON.stringify(h[index]))
 
-      let f = props.foodMap.get(h[index].refId)
+      let f = p.foodMap.get(h[index].refId)
       let fIndex = f.findIndex((f) => (f._id === h[index]._id))
       f[fIndex].num = h[index].num
-      props.foodMap.set(h[index].refId, f)
+      p.foodMap.set(h[index].refId, f)
 
-      props.setshow1(!props.show1)
+      p.setshow1(!p.show1)
       if (h[index].num == 0) {
-        let gg = props.totalTitle.filter((t) => t != item._id)
-        props.settotalTitle(gg)
-        props.map.delete(item._id + '1')
+        let gg = p.totalTitle.filter((t) => t != item._id)
+        p.settotalTitle(gg)
+        p.map.delete(item._id + '1')
       }
     }
   }
@@ -325,19 +292,19 @@ export function foodState(props) {
 
   this.deleteStorage = async () => {
     try {
-      for (let i of props.foods) {
+      for (let i of p.foods) {
         const { data } = await getallchildfood(i._id)
         for (let item of data.child) {
-          props.map.delete(item._id)
-          props.map.delete(item._id + '1')
+          p.map.delete(item._id)
+          p.map.delete(item._id + '1')
         }
 
-        props.map.delete('sum')
-        props.map.delete('allprice')
-        props.setallprice(0)
-        props.setallfood([])
-        props.settotalTitle([])
-        props.setshow1(!props.show1)
+        p.map.delete('sum')
+        p.map.delete('allprice')
+        p.setallprice(0)
+        p.setallfood([])
+        p.settotalTitle([])
+        p.setshow1(!p.show1)
       }
     }
     catch (err) { console.log(err); }
@@ -351,15 +318,15 @@ export function foodState(props) {
       (async () => {
         try {
           const { data } = await getsinglechildfood(id, id2)
-          props.setsinglefood(data.child)
-          props.setpermission(data.permission)
+          p.setsinglefood(data.child)
+          p.setpermission(data.permission)
         }
         catch (err) { console.log(err); }
       })()
       return () => (
-        props.setsinglefood({}),
-        props.setpermission(false),
-        props.setallcomment([])
+        p.setsinglefood({}),
+        p.setpermission(false),
+        p.setallcomment([])
       )
 
     }, []))
@@ -367,9 +334,9 @@ export function foodState(props) {
 
 
   this.setHeader = () => {
-    useFocusEffect(useCallback(() => props.navigation.setOptions({
-      header: !props.showForm2 && !props.showForm ? header : () => <></>
-    }), [props.showForm, props.showForm2]))
+    useFocusEffect(useCallback(() => p.navigation.setOptions({
+      headerLeft: !p.showForm2 && !p.showForm ? Platform.OS === 'ios'? header :null  : () => <></>
+    }), [p.showForm, p.showForm2]))
 
   }
 
@@ -378,10 +345,10 @@ export function foodState(props) {
       useCallback(() => {
         (async () => {
           await getProfile().then(({ data }) => {
-            data?.uri && props.setimageProfile(data.uri)
+            data?.uri && p.setimageProfile(data.uri)
           })
         })()
-      }, [props.allcomment])
+      }, [p.allcomment])
     )
   }
 
@@ -393,17 +360,17 @@ export function foodState(props) {
           console.log('getCommentSingle')
           const { data } = await getcommentchildfood(id, id2)
 
-          props.setallcomment(data.comment)
+          p.setallcomment(data.comment)
         }
         catch (err) { console.log(err); }
       })()
-    }, [props.showForm, props.showForm2, props.changeComment]))
+    }, [p.showForm, p.showForm2, p.changeComment]))
 
     useFocusEffect(useCallback(() => {
       return () => {
-        props.setShowForm(false)
-        props.setshowForm2(false)
-        props.setallcomment([])
+        p.setshowForm(false)
+        p.setshowForm2(false)
+        p.setallcomment([])
       }
     }, []))
   }
@@ -412,23 +379,24 @@ export function foodState(props) {
 
   this.sendComment = async () => {
     try {
+
       await createcommentchildfood(id, id2, {
-        starId: props.tokenValue.userId,
-        fullname: props.tokenValue.fullname,
-        imageUrl: props.imageProfile,
-        message: props.message,
-        allstar: Number(props.allstar),
-        id: props.singlefood._id
+        starId: p.tokenValue.userId,
+        fullname: p.tokenValue.fullname,
+        imageUrl: p.imageProfile,
+        message: p.message,
+        allstar: Number(p.allstar),
+        id: p.singlefood._id
       })
-      props.setstar1(false),
-        props.setstar2(false),
-        props.setstar3(false),
-        props.setstar4(false),
-        props.setstar5(false),
-        props.setFullname(''),
-        props.setEmail(''),
-        props.setMessage(''),
-        props.setshowForm2(false)
+      p.setstar1(false),
+        p.setstar2(false),
+        p.setstar3(false),
+        p.setstar4(false),
+        p.setstar5(false),
+        p.setfullname(''),
+        p.setemail(''),
+        p.setmessage(''),
+        p.setshowForm2(false)
     }
     catch (err) { console.log(err) }
   }
@@ -437,15 +405,15 @@ export function foodState(props) {
 
   this.editComment = async id3 => {
     try {
-      let { status } = await editcomment(id, id2, id3, { message: props.message, allstar: props.allstar })
-      props.setstar1(false)
-      props.setstar2(false)
-      props.setstar3(false)
-      props.setstar4(false)
-      props.setstar5(false)
-      props.setEmail('')
-      props.setMessage('')
-      props.setShowForm(false)
+      let { status } = await editcomment(id, id2, id3, { message: p.message, allstar: p.allstar })
+      p.setstar1(false)
+      p.setstar2(false)
+      p.setstar3(false)
+      p.setstar4(false)
+      p.setstar5(false)
+      p.setemail('')
+      p.setmessage('')
+      p.setshowForm(false)
     }
     catch (err) { console.log(err); }
   }
@@ -462,8 +430,8 @@ export function foodState(props) {
           { text: "Cancel", onPress: () => console.log("Cancel Pressed") },
           {
             text: "OK", onPress: async () => {
-              await deletecomment(id, route.params.id2, id3)
-              props.setchangeComment(!props.changeComment)
+              await deletecomment(id, route.params.id2, id3,p.tokenValue.userId)
+              p.setchangeComment(!p.changeComment)
             }
           }
         ]
@@ -477,33 +445,33 @@ export function foodState(props) {
 
 
   this.getEditComment = (id3) => {
-    useEffect(() => {
+    useFocusEffect(useCallback(() => {
       (async () => {
         try {
           const { data } = await getcommentsinglefood(id, id2, id3)
-          props.setMessage(data.comment.message)
-          props.setallstar(data.comment.allstar)
-          if (data.comment.allstar == 1) props.setstar1(true)
-          if (data.comment.allstar == 2) props.setstar1(true), props.setstar2(true)
-          if (data.comment.allstar == 3) props.setstar1(true), props.setstar2(true), props.setstar3(true)
-          if (data.comment.allstar == 4) props.setstar1(true), props.setstar2(true), props.setstar3(true), props.setstar4(true)
-          if (data.comment.allstar == 5) props.setstar1(true), props.setstar2(true), props.setstar3(true), props.setstar4(true), props.setstar5(true)
+          p.setmessage(data.comment.message)
+          p.setallstar(data.comment.allstar)
+          if (data.comment.allstar == 1) p.setstar1(true)
+          if (data.comment.allstar == 2) p.setstar1(true), p.setstar2(true)
+          if (data.comment.allstar == 3) p.setstar1(true), p.setstar2(true), p.setstar3(true)
+          if (data.comment.allstar == 4) p.setstar1(true), p.setstar2(true), p.setstar3(true), p.setstar4(true)
+          if (data.comment.allstar == 5) p.setstar1(true), p.setstar2(true), p.setstar3(true), p.setstar4(true), p.setstar5(true)
         } catch (err) { console.log(err); }
       })()
 
-    }, [])
+    }, []))
   }
 
 
 
   this.pressIconEdit = (id) => {
-    props.setShowForm(true)
-    props.setid3(id)
-    props.setstar1(false)
-    props.setstar2(false)
-    props.setstar3(false)
-    props.setstar4(false)
-    props.setstar5(false)
+    p.setshowForm(true)
+    p.setid3(id)
+    p.setstar1(false)
+    p.setstar2(false)
+    p.setstar3(false)
+    p.setstar4(false)
+    p.setstar5(false)
   }
 
 
@@ -515,7 +483,7 @@ export function foodState(props) {
         useFocusEffect(useCallback(() => {
           let current = 0
           BackHandler.addEventListener("hardwareBackPress", () => {
-            if (route.name === 'Home' && props.navigation?.getState()?.index === 0) {
+            if (route.name === 'Home' && p.navigation?.getState()?.index === 0) {
               current += 1
               if (current === 2) { BackHandler.exitApp(); return true }
               ToastAndroid.show("برای خروج دوبار لمس کنید", ToastAndroid.SHORT)
@@ -527,12 +495,13 @@ export function foodState(props) {
           })
 
           // return BackHandler.exitApp()
-          return BackHandler.removeEventListener('hardwareBackPress')
-
-
+          
+          
         }, []))
       }
       else return null
+
+      return()=> Platform.OS === 'android' && BackHandler.removeEventListener('hardwareBackPress')
     }
     catch (err) { console.log(err) }
   }
@@ -540,85 +509,24 @@ export function foodState(props) {
 
   this.payment = async () => {
     const { data } = await payment(
-      props.allprice,
+      p.allprice,
       {
-        foods: JSON.stringify(props.totalTitle),
-        plaque: props.plaque,
-        floor: props.floor,
-        formattedAddress: props.revers.formattedAddress,
-        streetName: props.revers.streetName,
-        origin: JSON.stringify(props.revers)
+        foods: JSON.stringify(p.totalTitle),
+        plaque: p.plaque,
+        floor: p.floor,
+        formattedAddress: p.revers.formattedAddress,
+        streetName: p.revers.streetName,
+        origin: JSON.stringify(p.revers)
       }
     )
-    console.log('props.totalTitle', props.totalTitle);
-    props.revers.formattedAddress !== NaN && props.navigation.navigate("Payment", { uri: data })
+    console.log('props.totalTitle', p.totalTitle);
+    p.revers.formattedAddress !== NaN && p.navigation.navigate("Payment", { uri: data })
 
 
     // await Linking.openURL(data)
   }
 
 
-  // address
-  this.getAllAddress = async () => {
-    useEffect(() => {
-      getAllAddress().then(({ data }) => {
-        props.setallAddress(data)
-        props.set_address(data)
-      })
-    }, [props.change])
-  }
-
-
-  this.deleteAddress = (_id) => {
-    Alert.alert(
-      "مشتری حذف شود ؟",
-      "",
-      [
-        { text: "Cancel" },
-        { text: "yes", onPress: async () => { await deleteAddress(_id); props.setchange(!props.change); } }
-      ])
-  }
-
-
-
-  this.totalAllAddress = () => {
-    let total = []
-    useFocusEffect(useCallback(() => {
-      props.allAddress.forEach((address) => {
-        total.push(address.price)
-      })
-      const su = total.length && total.reduce((total, number) => total + number)
-      props.settotalPrices(su);
-
-      AsyncStorage.getItem('totalOldPrice').then((res) => {
-        res && props.setoldPrice(JSON.parse(res))
-      })
-    }, [props.allAddress]))
-  }
-
-
-  this.deleteAllAddress = () => {
-    Alert.alert(
-      "آیا از حذف تمام مشتریان مطمئنید؟",
-      "",
-      [
-        { text: "Cancel" },
-        {
-          text: "yes", onPress: async () => {
-            Alert.alert(
-              "",
-              "بعد از حذف دیگر قادر به برگرداندن نخواهید بود!!",
-              [
-                { text: "Cancel" },
-                {
-                  text: "yes", onPress: async () => {
-                    await deleteAllAddress(); await AsyncStorage.setItem('totalOldPrice', JSON.stringify(props._moment + '=' + props.totalPrices)); props.setchange(!props.change);
-                  }
-                }])
-          }
-        }])
-  }
-  // address
 
 }
 
@@ -626,25 +534,25 @@ export function foodState(props) {
 
 //home
 export const home = (props) => {
-  useEffect(() => {
+  useMemo(() => {
     (async () => {
-      let newNotification = await AsyncStorage.getItem('notification')
+      let newNotification = await localStorage.getItem('notification')
       const { data } = await notification()
       if (data)
         if (data.message && newNotification !== data.message) {
           create(data.title, data.message, require('../assets/a1.png'))
-          await AsyncStorage.setItem('notification', data.message)
+          await localStorage.setItem('notification', data.message)
         }
     })();
 
     setInterval(async () => {
       (async () => {
-        let newNotification = await AsyncStorage.getItem('notification')
+        let newNotification = await localStorage.getItem('notification')
         const { data } = await notification()
         if (data)
           if (data.message && newNotification !== data.message) {
             create(data.title, data.message, require('../assets/a1.png'))
-            await AsyncStorage.setItem('notification', data.message)
+            await localStorage.setItem('notification', data.message)
           }
       })();
     }, 15000);

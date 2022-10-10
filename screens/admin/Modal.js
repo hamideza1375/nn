@@ -11,7 +11,7 @@ const _Modal = (p) => {
   const handle = () => {
     if (p.id && p.id2) _admin.deleteChildFoodAction(p.id, p.id2)
     p.id && !p.id2 && _admin.deleteFoodAction(p.id) 
-    p.setShowModal(!p.showModal);
+    p.setshowModal(!p.showModal);
     p.deleteUnmunt && p.deleteUnmunt(p.id2)
     p.availabe && p.availabe(false)
   }
@@ -19,7 +19,7 @@ const _Modal = (p) => {
   return (
     <View style={{ height: 0 }} >
       <Modal style={{ width: 333, height: 200, backgroundColor: '#eee' }}
-        setShow={p.setShowModal} show={p.showModal}>
+        setshow={p.setshowModal} show={p.showModal}>
         <View>
           <Card bgcolor='#f8a2' color='#a489' header={p.message}
             style={{
@@ -30,7 +30,7 @@ const _Modal = (p) => {
         <View style={{ marginTop: 20, flexDirection: 'row', justifyContent: 'space-evenly', width: '100%' }}>
           <Button color='#fff' bgcolor='#9ad' onPress={handle}
             style={{ fontSize: 14, width: 78, marginVertical: 11 }}>بله</Button>
-          <Button color='#fff' bgcolor='#d7a' onPress={() => { p.availabe && p.availabe(true); p.setShowModal(!p.showModal) }} style={{ fontSize: 14, width: 78, marginVertical: 11 }}>خیر</Button>
+          <Button color='#fff' bgcolor='#d7a' onPress={() => { p.availabe && p.availabe(true); p.setshowModal(!p.showModal) }} style={{ fontSize: 14, width: 78, marginVertical: 11 }}>خیر</Button>
         </View>
       </Modal >
     </View>

@@ -21,12 +21,12 @@ const Sms = (p) => {
             <Text style={{alignSelf:'center'}}>کد ارسال شده را وارد کنید</Text>
           }
           {!p.replaceInput ? <View style={styles.viewInput}>
-            <Input value={p.myPhone} onChangeText={(text) => p.setMyPhone(text)} style={{ width: '100%' }} p="شماره تلفن" />
+            <Input value={p.myPhone} onChangeText={(text) => p.setmyPhone(text)} style={{ width: '100%' }} p="شماره تلفن" />
             <Button outline style={{width:165, marginTop:20}} onPress={handlePhone} >ارسال</Button>
           </View>
             :
             <View style={styles.viewInput}>
-              <Input value={p.myCode} onChangeText={(text) => p.setMyCode(text)} style={{  width: '100%' }} p="ارسال کد" />
+              <Input value={p.myCode} onChangeText={(text) => p.setmyCode(text)} style={{  width: '100%' }} p="ارسال کد" />
               <Button outline style={{width:65, marginTop:10}} onPress={handleCode} >ارسال</Button>
             </View>
           }

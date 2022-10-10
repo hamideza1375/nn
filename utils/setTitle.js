@@ -2,8 +2,6 @@ import { useEffect } from 'react';
 import { useNavigation, useRoute } from '@react-navigation/native';
 
 
-
-
  const setTitle = (title) => {
     const navigation = useNavigation()
     const route = useRoute()

@@ -75,6 +75,12 @@ function Pagination(props) {
 
   useFocusEffect(useCallback(() => { gotoPage(page) }, [ass]))
 
+  useFocusEffect(useCallback(() => { 
+    gotoPage(1)
+    setcurrentPage(1)
+    setpage(1);
+  }, []))
+
 
 
   const pages = fetchPageNumbers();

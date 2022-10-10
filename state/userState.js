@@ -1,34 +1,17 @@
-import { sendcode, verifycode, loginUser, registerUser, forgetpassword, useradmin, deleteAdmin, getAlluserAdmin, resetpassword } from "../services/userService"
+import { verifycodeRegister,sendcode, verifycode, loginUser, registerUser, forgetpassword, resetpassword } from "../services/userService"
 import localStorage from '@react-native-async-storage/async-storage';
 import { useRoute, useNavigationState, useNavigation, useFocusEffect } from '@react-navigation/native';
-import { useCallback, useEffect } from "react";
-import { launchImageLibrary } from "react-native-image-picker";
+import { useCallback, useEffect, useMemo } from "react";
 import jwt_decode from "jwt-decode";
 import { geocode, getallchildfood, getProfile, reverse, sendProfile } from "../services/foodService"
-import { Alert } from "react-native";
-import { imagePicker } from '../states/imagePicer';
-
+import { Keyboard } from "react-native";
+import { imagePicker } from '../utils/imagePicer';
+import Alert from '../utils/alert'
 let loginInterval = null
 
-export function userState(props) {
+export function userState(p) {
   const route = useRoute()
   const navigation = useNavigation()
-  const ind = useNavigationState((state) => state)
-
-
-
-  this.addAdmin = async () => {
-    await useradmin({ phone: props.phone });
-    props.setPhone('')
-    navigation.goBack()
-  }
-
-
-  this.deleteAdmin = async () => {
-    await deleteAdmin({ phone: props.phone });
-    props.setPhone('')
-    navigation.goBack()
-  }
 
 
   //Login
@@ -47,23 +30,26 @@ export function userState(props) {
         await localStorage.removeItem('getMinutes')
       }, 120000);
     }
-    if (JSON.parse(svl) < 5 || !locMinut) {
+    if (JSON.parse(svl) < 5 || locMinut - d.getMinutes() < .5) {
       await localStorage.removeItem('getTime')
       await localStorage.setItem('getMinutes', JSON.stringify(d.getMinutes() + 5))
       localStorage.getItem("several").then((several) => {
         localStorage.setItem("several", JSON.stringify(JSON.parse(several) + 1)).then(() => { })
       })
-      const { data } = await loginUser({ email: props.email, password: props.password, phone: props.phone, captcha: props.captcha, remember: props.remember ? "1h" : "100h" }, navigation);
+      console.log(1111,p.remember)    
+        // send
+      const { data } = await loginUser({ email: p.email, password: p.password, phone: p.phone, captcha: p.captcha, remember:p.remember }, navigation);
       await localStorage.setItem("token", data.token);
       await localStorage.setItem("exp", data.exp);
       const user = jwt_decode(data.token)
-      props.settokenValue(user)
-      props.settimeChange(5)
+      p.settokenValue(user)
+      p.settimeChange(5)
+      // send
 
 
-      props.route.params?.name !== 'ChildFood' ?
+      p.route.params?.name !== 'ChildFood' ?
         navigation.navigate("Home") :
-        props.route.params.price != 0 ?
+        p.route.params.price != 0 ?
           navigation.navigate("FinallFoodPayment") :
           navigation.navigate("Home")
     }
@@ -76,7 +62,7 @@ export function userState(props) {
       }
       localStorage.getItem('getMinutes').then((locMinut) => {
         if (JSON.parse(svl) >= 5)
-          alert(`تعداد دفعات وارد شده بیشتر از حد مجاز بود ${locMinut - d.getMinutes() > 0 ? locMinut - d.getMinutes() : 0} دقیقه دیگر دوباره امتحان کنید`)
+        locMinut - d.getMinutes() > .5 && alert(`تعداد دفعات وارد شده بیشتر از حد مجاز بود ${locMinut - d.getMinutes() > 0 ? locMinut - d.getMinutes() : 0} دقیقه دیگر دوباره امتحان کنید`)
       })
     }
   }
@@ -84,10 +70,10 @@ export function userState(props) {
 
   this.mountLogin = () => {
     useFocusEffect(useCallback(() => (() => { 
-      props.setFullname(''); 
-      props.setEmail(''); 
-      props.setPhone(''); 
-      props.setPassword('') }), []))
+      p.setfullname(''); 
+      p.setemail(''); 
+      p.setphone(''); 
+      p.setPassword('') }), []))
   }
   //Login
 
@@ -96,22 +82,33 @@ export function userState(props) {
 
   // register
   this.registerSendAction = async () => {
-    await registerUser({ fullname: props.fullname, email: props.email, phone: props.phone, password: props.password });
-    navigation.navigate("Login")
-  }
+    await registerUser({phone: p.phone});
+    p.setchangeRegister(!p.changeRegister) 
+   }
+
+
+   this.registerSendCode = async () => {
+    await verifycodeRegister({ code:p.code,fullname: p.fullname, email: p.email, phone: p.phone, password: p.password })
+    p.navigation.navigate("Login")
+    p.setchangeRegister(!p.changeRegister) 
+   }
   // register
+
+
+
+
 
 
   // Home
   this._token = async () => {
-    if (ind.index === 0 && route.name === 'Home') {
+    if (p.navigation?.getState()?.index === 0 && route.name === 'Home') {
       const exp = await localStorage.getItem("exp");
-      if (exp && Number(exp) > Date.now() / 1000) return props.settoken(true)
-      if (!exp) return props.settoken(false)
+      if (exp && Number(exp) > Date.now() / 1000) return p.settoken(true)
+      if (!exp) return p.settoken(false)
       if (exp && Number(exp) < Date.now() / 1000) {
         await localStorage.removeItem("token");
         await localStorage.removeItem("exp");
-        return props.settoken(false)
+        return p.settoken(false)
       }
     }
   }
@@ -120,20 +117,20 @@ export function userState(props) {
 
   // profile
   this._tokenValue = () => {
-    useEffect(() => {
+    useFocusEffect(useCallback(() => {
       localStorage.getItem("token").then((token) => {
         const user = jwt_decode(token)
-        props.settokenValue(user)
+        p.settokenValue(user)
       })
-    }, [])
+    }, []))
   }
 
 
   this.imagePicker = () => {
     imagePicker('photo')
     .then(async(res) => {
-      await sendProfile(res);
-       props.setchange(!props.change)
+      await sendProfile({uri:res});
+       p.setchange(!p.change)
     })
   }
 
@@ -146,13 +143,13 @@ export function userState(props) {
           let room = ['room5', 'room6']
           for (let i of room) {
             let loc = await localStorage.getItem(i)
-            if (loc) { props.allRoom.set(i, JSON.parse(loc)); props.msgLength.set(i, JSON.parse(loc)); }
+            if (loc) { p.allRoom.set(i, JSON.parse(loc)); p.msgLength.set(i, JSON.parse(loc)); }
           }
         })()
   
         localStorage.getItem("token").then((token) => {
           const user = jwt_decode(token)
-          token && props.settokenValue(user)
+          token && p.settokenValue(user)
         })
   
       }, [])
@@ -162,12 +159,22 @@ export function userState(props) {
       useCallback(() => {
         (async()=> {
           await getProfile().then(({data}) => {
-            data?.uri && props.setimageProfile(data.uri)
+            data?.uri && p.setimageProfile(data.uri)
             console.log(555555,data)
           })
         })()
-      }, [props.change])
+      }, [p.change])
     )
+
+    useMemo(() => {
+      try {
+        Keyboard.removeAllListeners('keyboardDidShow')
+        Keyboard.removeAllListeners('keyboardDidHide')
+      } 
+      catch (error) {}
+    }, [])
+
+
     }
 
   // profile
@@ -176,27 +183,27 @@ export function userState(props) {
 
   // forgetpassword
   this.forgetAction = async () => {
-    await forgetpassword({ email: props.email })
+    await forgetpassword({ email: p.email })
   }
 
   this.setreplaceInput = async () => {
-    useEffect(() => {
+    useFocusEffect(useCallback(() => {
       return () => {
-        props.setreplaceInput(false)
+        p.setreplaceInput(false)
       }
-    }, [])
+    }, []))
   }
   // forgetpassword
 
 
   //sms
   this.smsAction = async () => {
-    await sendcode({ phone: props.myPhone })
-    props.setreplaceInput(true)
+    await sendcode({ phone: p.myPhone })
+    p.setreplaceInput(true)
   }
 
   this.codeAction = async () => {
-    const { data } = await verifycode({ code: props.myCode })
+    const { data } = await verifycode({ code: p.myCode })
     navigation.navigate('ResetPass', { id: data })
   }
 
@@ -208,7 +215,7 @@ export function userState(props) {
 
   // location
   this.geoCodeAction = async () => {
-    let { data } = await geocode({ loc: `سبزوار ${props.search1}` })
+    let { data } = await geocode({ loc: `سبزوار ${p.search1}` })
     let orgin = {
       latitude: data[0].latitude,
       longitude: data[0].longitude,
@@ -222,8 +229,8 @@ export function userState(props) {
       data[0].longitude > 57.645 &&
       data[0].longitude < 57.711 &&
       data[0].latitude > 36.191 &&
-      data[0].latitude < 36.239) props.setmarkers(orgin);
-    props.setallItemLocation(data[0])
+      data[0].latitude < 36.239) p.setmarkers(orgin);
+    p.setallItemLocation(data[0])
     // console.log(data);
 
   }
@@ -233,18 +240,18 @@ export function userState(props) {
     let orgin = {
       ...e.nativeEvent.coordinate,
     }
-    props.setmarkers(orgin)
+    p.setmarkers(orgin)
   }
 
 
   this.reversAction = async () => {
     useEffect(() => {
       (async () => {
-        let { data } = await reverse(props.markers)
+        let { data } = await reverse(p.markers)
         let formattedAddress = data[0].formattedAddress
         let streetName = data[0].streetName
 
-        props.setrevers({
+        p.setrevers({
             formattedAddress, streetName,
             origin: {
               latitude: data[0].latitude,
@@ -253,50 +260,32 @@ export function userState(props) {
               longitudeDelta: 0.008
             }
           })
-          props.setallItemLocation(data[0])
+          p.setallItemLocation(data[0])
           console.log('origin', origin);
         
       })()
-    }, [props.markers])
+    }, [p.markers])
 
 
 
     useEffect(() => {
-      if (props.allItemLocation && props.allItemLocation.longitude) {
+      if (p.allItemLocation && p.allItemLocation.longitude) {
         if (
-          props.allItemLocation.longitude < 57.645 ||
-          props.allItemLocation.longitude > 57.711 ||
-          props.allItemLocation.latitude < 36.191 ||
-          props.allItemLocation.latitude > 36.239 ||
-          props.allItemLocation.streetName === "سبزوار - اسفراین"
+          p.allItemLocation.longitude < 57.645 ||
+          p.allItemLocation.longitude > 57.711 ||
+          p.allItemLocation.latitude < 36.191 ||
+          p.allItemLocation.latitude > 36.239 ||
+          p.allItemLocation.streetName === "سبزوار - اسفراین"
         ) Toast('این منطقه از ارسال غذا پشتیبانی نمیکند')
       }
-      if (props.route.params?.origin && props.tokenValue.isAdmin) props.setmarkers(props.route.params.origin["origin"])
-    }, [props.allItemLocation])
+      if (p.route.params?.origin && p.tokenValue.isAdmin) p.setmarkers(p.route.params.origin["origin"])
+    }, [p.allItemLocation])
   
   
 
 
   }
 
-
-
-
-  
-
-
-  // location
-
-  // deleteadmin
-  this.getAlluserAdmin = async () => {
-  useEffect(()=>{
-    (async() => {
-      const {data} = await getAlluserAdmin()
-      props.setadmin(data)
-    })()
-  },[])
-  }
-  // deleteadmin
 
 
   // logout
@@ -308,32 +297,33 @@ export function userState(props) {
       Alert.alert(
         "خارج میشوید؟",
         "",
-        [{ text: 'cancele', onPress:()=>{props.navigation.goBack()} },
+        [{ text: 'cancele', onPress:()=>{p.navigation.goBack()} },
          { text: 'ok', onPress: async() => {   
-              props.setnavigateProfile(false)
-          props.setnavigateUser(false)
-          props.settokenValue({})
-          props.settoken(false)
+              p.setnavigateProfile(false)
+          p.setnavigateUser(false)
+          p.settokenValue({})
+          p.settoken(false)
           await localStorage.removeItem("token");
           await localStorage.removeItem("exp");
 
-          for (let i of props.foods) {
+          for (let i of p.foods) {
             const { data } = await getallchildfood(i._id)
             for (let item of data.child) {
-              props.map.delete(item._id)
-              props.map.delete(item.title)
+              p.map.delete(item._id)
+              p.map.delete(item.title)
             }
           }
-          props.map.delete('sum')
-          props.map.delete('allprice')
-          props.setallprice(0)
+          p.map.delete('sum')
+          p.map.delete('allprice')
+          p.setallprice(0)
 
-          props.navigation.navigate("Home"); } }])
+          p.navigation.navigate("Home")
+         } }])
     })()
 
     return () => (
-      props.setnavigateProfile(false),
-      props.setnavigateUser(false)
+      p.setnavigateProfile(false),
+      p.setnavigateUser(false)
     )
   }, []);
 }
@@ -344,8 +334,8 @@ export function userState(props) {
   // resetPass
   this.resetpassword=async()=>{
       try {
-        const { status } = await resetpassword(props.route.params.id, { password: props.password, confirmPassword: props.confirmPassword })
-        if (status === 200) props.navigation.navigate('Login')
+        const { status } = await resetpassword(p.route.params.id, { password: p.password, confirmPassword: p.confirmPassword })
+        if (status === 200) p.navigation.navigate('Login')
       } catch (err) { alert('خطایی رخ داد دوباره امتحان کنید'); }
   }
   // resetPass
@@ -354,9 +344,3 @@ export function userState(props) {
 
 }
 
-export const origin = {
-  latitude: 36.224174234928924,
-  longitude: 57.69491965736432,
-  latitudeDelta: 0.01,
-  longitudeDelta: 0.01
-}

@@ -1,10 +1,9 @@
 import React from 'react'
 import { View, Text, StyleSheet, Pressable } from 'react-native'
-import Icon from 'react-native-vector-icons/dist/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
 
 
-const Drawer = ({ route2, children, route,  style, bgcolor = '#fff',color="#777", activeColor="#47f" }) => {
+const Drawer = ({ group, children, name,  style, bgcolor = '#fff',color="#777", activeColor="#47f" }) => {
 
   const navigation = useNavigation()
 
@@ -12,13 +11,13 @@ const Drawer = ({ route2, children, route,  style, bgcolor = '#fff',color="#777"
   return (
     <View style={styles.container} >
       <View style={[styles.sidebar, {backgroundColor: bgcolor }, style]} >
-        {route2.map((r, key) => (
+        {group.map((item, key) => (
           <View key={key} style={styles.routeView} >
             <Pressable
-              onPressIn={() => navigation.navigate(r.title)}
-              style={[styles.pressableActive, { borderBottomColor: route == r.title ? "#25f" : "#f5f5f5", borderBottomWidth: route == r.title ? 2 : 0 }]} >
+              onPressIn={() => navigation.navigate(item)}
+              style={[styles.pressableActive, { borderBottomColor: name === item ? "#25f" : "#f5f5f5", borderBottomWidth: name === item ? 2 : 0 }]} >
               <Text style={[styles.textActive, 
-                { color: route == r.title ? activeColor : color }]}>{r.title}</Text>
+                { color: name === item ? activeColor : color }]}>{item}</Text>
             </Pressable>
           </View>
         ))}

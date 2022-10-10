@@ -15,7 +15,7 @@ import {  H3, Li, P, Row, Small } from '../Components/Html';
 import * as s from './styles.scss';
 import Modal from '../Components/Modal';
 import B_icon from '../Components/B_icon';
-import { localhost } from '../services/host.json'
+import {localhost} from '../utils/axios/axios'
 import Dropdown from '../Components/Dropdown';
 import Loading from '../Components/Loading'
 import Badge from '../Components/Badge';
@@ -23,7 +23,7 @@ import { toast } from '../state/foodState';
 import { imagechat } from '../services/foodService';
 import Toast from '../Components/Toast';
 import uuid from 'react-native-uuid'
-import {create, close} from '../states/notification';
+import {create, close} from '../utils/notification';
 
 
 let offset = 1
@@ -43,7 +43,7 @@ const Chat = (props) => {
   const [modalTitle, setModalTitle] = useState("")
   const [pvChatMessage, setPvChatMessage] = useState("")
   const [to1, setto1] = useState('')
-  const [show, setShow] = useState(false);
+  const [show, setshow] = useState(false);
   const [show2, setShow2] = useState(false);
   const [show3, setShow3] = useState(false);
   const [first, setfirst] = useState(false)
@@ -110,14 +110,14 @@ const Chat = (props) => {
         if (infoc.current) {
           infoc.current.focus()
         }
-        setShow(true)
+        setshow(true)
         if (pPv.current) pPv.current.style.display = 'block';
         setModalTitle("دریافت از طرف : " + data.name)
         let UserI = users.find((user) => (user.nickname == data.name))
         setto1(UserI.id)
         setPvChatMessage(data.pvMessage)
       }
-      if (socket.current.id == iid) setShow(false)
+      if (socket.current.id == iid) setshow(false)
       setPvMessage('')
     });
 
@@ -543,11 +543,11 @@ const Chat = (props) => {
       <View style={{ height: 0 }}>
    
 
-        <Modal style={{ width: 333, height: 150 }} setShow={setShow3} show={show3}>
+        <Modal style={{ width: 333, height: 150 }} setshow={setShow3} show={show3}>
           <H3>نام: {modalTitle}</H3>
           <Row>
             {/* <B_icon icon='video' onPress={() => { setShow3(false); setShowWideo(true) }} ></B_icon> */}
-            <B_icon icon="envelope" onPress={() => { setShow3(false); setShow(true); setPvChatMessage('') }} />
+            <B_icon icon="envelope" onPress={() => { setShow3(false); setshow(true); setPvChatMessage('') }} />
           </Row>
           <Li style={{ height: 100, margin: 2 }}></Li>
         </Modal>
@@ -555,7 +555,7 @@ const Chat = (props) => {
 
 
 
-        <Modal style={{ width: 333, height: 150 }} setShow={setShow} show={show} onHide={() => setPvChatMessage('')}>
+        <Modal style={{ width: 333, height: 150 }} setshow={setshow} show={show} onHide={() => setPvChatMessage('')}>
           <View>
             <Small > {modalTitle} </Small>
           </View>

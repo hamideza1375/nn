@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { KeyboardAvoidingView, Pressable, View, Text, TextInput, Image, StyleSheet, ScrollView, Dimensions, Animated } from 'react-native'
-import {Input, Button, CheckBox} from './Html'
+import { Input, Button, CheckBox } from './Html'
 import Swiper from './Swiper'
-import yub from '../states/yub'
+import yub from '../utils/yub'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Icon5 from 'react-native-vector-icons/FontAwesome5';
 import { launchImageLibrary } from "react-native-image-picker";
@@ -11,24 +11,27 @@ import { _scrollView } from '../screens/food/Home';
 import { useFocusEffect } from '@react-navigation/native';
 
 
-
-const Form = ({ f, e, p, cp, m, ch, c, t, pr, im, i, edit, s, gc,ph,
-  title, setTitle, price, setPrice, phone, setPhone,
+let interval
+const Form = ({ bgcolor='#f0f0f0',f, e, p, cp, m, ch, c, t, pr, im, i, edit, s, ph,$code,code,setcode,
+  title, settitle, price, setprice, phone, setphone,
   imageUrl, setImageUrl, info, setInfo
-  , style, fullname, setFullname,
-  email, setEmail, password, setPassword,
-  confirmPassword, setConfirmPassword, onPress, message,
-  setMessage, children, captcha, setCaptcha, host, checkText, setRemember, remember,
+  , style, fullname, setfullname,
+  email, setemail, password, setPassword,
+  confirmPassword, setconfirmPassword, onPress, message,
+  setmessage, children, captcha, setcaptcha, host, checkText, setremember,remember,
   star1, setstar1, star2, setstar2, star3, setstar3, star4, setstar4, star5, setstar5, allstar,
   setallstar,
-  sizeY=1,top=25,
-  setOrientation, setwidth, setheight,
-  fIconLeft,fIconRight,eIconLeft,eIconRight,pIconLeft,pIconRight,cpIconLeft,cpIconRight,
-  tIconLeft,tIconRight,prIconLeft,prIconRight,iIconLeft,iIconRight,imIconLeft,imIconRight, phIconLeft,phIconRight
+  sizeY = 1, top = 25,
+  setorientation, setwidth, setheight,
+  fIconLeft, fIconRight, eIconLeft, eIconRight, pIconLeft, pIconRight, cpIconLeft, cpIconRight,
+  tIconLeft, tIconRight, prIconLeft, prIconRight, iIconLeft, iIconRight, imIconLeft, imIconRight, phIconLeft, phIconRight,
+  input, setinput, _input
 }) => {
 
 
-
+  useFocusEffect(useCallback(()=>{
+  return()=>(interval) && clearInterval(interval)
+},[]))
 
   useEffect(() => {
     setallstar && setallstar(() => {
@@ -61,8 +64,8 @@ const Form = ({ f, e, p, cp, m, ch, c, t, pr, im, i, edit, s, gc,ph,
 
 
   Dimensions.addEventListener('change', ({ window: { width, height } }) => {
-    if (width < height) { setOrientation("PORTRAIT"); setwidth(width); setheight(height) }
-    else { setOrientation("LANDSCAPE"); setwidth(width); setheight(height) }
+    if (width < height) { setorientation("PORTRAIT"); setwidth(width); setheight(height) }
+    else { setorientation("LANDSCAPE"); setwidth(width); setheight(height) }
   })
 
 
@@ -70,19 +73,15 @@ const Form = ({ f, e, p, cp, m, ch, c, t, pr, im, i, edit, s, gc,ph,
   const [secure, setSecure] = useState(true)
   const [secure2, setSecure2] = useState(true)
 
-  const [show, setShow] = useState((ch && !checkText) ? false : true)
+  const [show, setshow] = useState(ch && !checkText?false:true)
   const [rand, setRand] = useState(parseInt(Math.random() * 9000 + 1000));
   const [show2, setShow2] = useState(false);
 
-  const size = 'normal';
-  const [show1, setshow1] = useState(false);
-  const [key, setKey] = useState(false);
-  const [change, setchange] = useState(false);
-
   const [changeRand, setchangeRand] = useState(false);
 
-  const $recaptcha = useRef();
+  const [changeremember, setchangeremember] = useState(true);
 
+  
 
 
   useFocusEffect(useCallback(() => {
@@ -143,7 +142,6 @@ const Form = ({ f, e, p, cp, m, ch, c, t, pr, im, i, edit, s, gc,ph,
   var img = im ? !edit ? newObj.imageUrl === imageUrl : true : true
   var inf = i ? newObj.info === info : true
 
-  var ky = gc ? show1 : true
 
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -464,622 +462,649 @@ const Form = ({ f, e, p, cp, m, ch, c, t, pr, im, i, edit, s, gc,ph,
 
 
 
-  useEffect(() => {
-    gc && setshow1(key)
-  }, [change])
-
-
-
   return (
-    
-    <_scrollView style={{backgroundColor:'#f0f0f0'}} >
 
-    <View style={[styles.viewContainer,{paddingTop:top},style]} >
-    
-      <View style={[{transform:[{scaleY:sizeY}] , paddingHorizontal:20}]}>
+    <_scrollView style={{ backgroundColor: bgcolor,borderRadius:3 }} >
+
+      <View style={[styles.viewContainer, { paddingTop: top }, style]} >
+
+        <View style={[{ transform: [{ scaleY: sizeY }], paddingHorizontal: 20 }]}>
 
 
-         {
-           f && 
-           <KeyboardAvoidingView behavior={"height"} style={{flex:1}}>
-           <Animated.View style={[styles.viewInput,{minHeight:90}, { marginBottom: 5}]} >
-               <Swiper 
-               cansel={(fIconLeft || fIconRight)?false:true} 
-               style={{ height:'100%',marginBottom:20,paddingBottom:20}} 
-               styleRightIcon={{ top: 37 }}
-               styleLeftIcon={{ top: 37 }}
-               iconLeft={fIconLeft}
-               iconRight={fIconRight}
-               >
-                <Text style={[styles.textinput,{marginTop:5}]} >نام</Text>
-                <Animated.View style={[styles.animatedBorder, _fullname && !flm && { borderWidth: 1.2, borderColor: iterPlt, transform: [{ translateX: fadeAnim }] }]} >
-                <Input
-                  textContentType="name"
-                  autoComplete="name"
-                  icon="user"
-                  defaultValue=""
-                  p=" نام "
-                  value={fullname}
-                  onChangeText={(text) => setFullname(text)}
-                  onBlur={() => { set_Fullname(true); !flm && fadeOut() }}
-                  style={[styles.input]}
-                  />
+
+          {
+            f &&
+            <KeyboardAvoidingView behavior={"height"} style={{ flex: 1 }}>
+              <Animated.View style={[styles.viewInput, { minHeight: 90 }, { marginBottom: 5 }]} >
+                <Swiper
+                  cansel={(fIconLeft || fIconRight) ? false : true}
+                  style={{ height: '100%', marginBottom: 20, paddingBottom: 20 }}
+                  styleRightIcon={{ top: 37 }}
+                  styleLeftIcon={{ top: 37 }}
+                  iconLeft={fIconLeft}
+                  iconRight={fIconRight}
+                >
+                  <Text style={[styles.textinput, { marginTop: 5 }]} >نام</Text>
+                  <Animated.View style={[styles.animatedBorder, _fullname && !flm && { borderWidth: 1.2, borderColor: iterPlt, transform: [{ translateX: fadeAnim }] }]} >
+                    <Input
+                      textContentType="name"
+                      autoComplete="name"
+                      icon="user"
+                      defaultValue=""
+                      p=" نام "
+                      value={fullname}
+                      onChangeText={(text) => setfullname(text)}
+                      onBlur={() => { set_Fullname(true); !flm && fadeOut() }}
+                      style={[styles.input]}
+                    />
+                  </Animated.View>
+                  {_fullname && !flm && <Text style={[styles.textinput, { color: 'red' }]} >
+                    {newObj.fullname}
+                  </Text>
+                  }
+                </Swiper>
               </Animated.View>
-              {_fullname && !flm && <Text style={[styles.textinput, { color: 'red' }]} >
-                {newObj.fullname}
-              </Text>
-              }
-              </Swiper>
-            </Animated.View>
             </KeyboardAvoidingView>
-      }
-
-  
-
-       
-
-
-
-        {e &&
-            <KeyboardAvoidingView behavior={"height"} style={{flex:1}}>
-        <Animated.View style={[styles.viewInput,{minHeight:90}, { marginBottom: 5 },
-        !eml && { transform: [{ translateX: fadeAnim2 }] }]} >
-          <Swiper cansel={(eIconLeft || eIconRight)?false:true} style={{ height:'100%',marginBottom:20,paddingBottom:20}}
-           styleRightIcon={{ top: 37 }}
-             styleLeftIcon={{ top: 37 }}
-             iconLeft={eIconLeft}
-             iconRight={eIconRight}>
-          <Text style={[styles.textinput,{marginTop:5}]} >ایمیل</Text>
-          <Animated.View style={[styles.animatedBorder, _email && !eml &&
-            { borderWidth: 1.2, borderColor: iterPlt2 }]} >
-            <Input p=" ایمیل "
-              textContentType="emailAddress"
-              autoComplete="email"
-              icon="envelope"
-              keyboardType="email-address"
-              defaultValue=""
-              value={email}
-              onChangeText={(text) => setEmail(text)}
-              onBlur={() => { set_Email(true); !eml && fadeOut2() }}
-              style={styles.input}
-            />
-          </Animated.View>
-          {_email && !eml && <Text style={[styles.textinput, { color: 'red' }]} >
-            {newObj.email}
-          </Text>}
-          </Swiper>
-        </Animated.View>
-        </KeyboardAvoidingView>
-        }
-
-
-
-
-
-
-    {ph &&
-            <KeyboardAvoidingView behavior={"height"} style={{flex:1}}>
-        <Animated.View style={[styles.viewInput,{minHeight:90}, { marginBottom: 5 },
-        !pon && { transform: [{ translateX: fadeAnimPh }] }]} >
-          <Swiper cansel={(phIconLeft || phIconRight)?false:true} style={{ height:'100%',marginBottom:20,paddingBottom:20}}
-           styleRightIcon={{ top: 37 }}
-             styleLeftIcon={{ top: 37 }}
-             iconLeft={phIconLeft}
-             iconRight={phIconRight}>
-          <Text style={[styles.textinput,{marginTop:5}]} >شماره تلفن</Text>
-          <Animated.View style={[styles.animatedBorder, _phone && !pon &&
-            { borderWidth: 1.2, borderColor: iterPlt }]} >
-            <Input p=" شماره تلفن "
-              textContentType="telephoneNumber"
-              autoComplete="cc-number"
-              icon="phone"
-              keyboardType="phone-pad"
-              value={phone}
-              onChangeText={(text) => setPhone(text)}
-              onBlur={() => { set_Phone(true); !pon && fadeOutPh() }}
-              style={styles.input}
-            />
-          </Animated.View>
-          {_phone && !pon && <Text style={[styles.textinput, { color: 'red' }]} >
-            {newObj.phone}
-          </Text>}
-          </Swiper>
-        </Animated.View>
-        </KeyboardAvoidingView>
-        }
-
-
-
-
-
-
-
-
-
-
-        {p && 
-                <KeyboardAvoidingView behavior={"height"} style={{flex:1}}>
-        <Animated.View style={[styles.viewInput,{minHeight:90},{marginBottom: 5}]} >
-        <Swiper cansel={(pIconLeft || pIconRight)?false:true} style={{ height:'100%',marginBottom:20,paddingBottom:20}}
-         styleRightIcon={{ top: 37 }}
-          styleLeftIcon={{ top: 37 }}
-          iconLeft={pIconLeft} 
-          iconRight={pIconRight}
-          >          
-           <Text style={[styles.textinput,{marginTop:5}]} >رمز عبور</Text>
-          <Animated.View style={[styles.animatedBorder, _password && !psd &&
-          {
-            borderWidth: 1.2, borderColor: iterPlt3, transform: [{ translateX: fadeAnim3 }]
-          }]} >
-            <Input p=" رمز عبور "
-              textContentType="password"
-              autoComplete="password"
-              iconPress={() => { setSecure(!secure); }}
-              icon={!secure ? "eye" : "eye-slash"}
-              secureTextEntry={secure}
-              defaultValue=""
-              value={password}
-              onChangeText={(text) => setPassword(text)}
-              onBlur={() => { set_Password(true); !psd && fadeOut3() }}
-              style={styles.input}
-            />
-          </Animated.View>
-          {_password && !psd && <Text style={[styles.textinput, { color: 'red' }]} >
-            {newObj.password}
-          </Text>}
-          </Swiper>
-        </Animated.View>
-        </KeyboardAvoidingView>
-        }
-
-
-
-
-
-        {cp && 
-        <KeyboardAvoidingView behavior={"height"} style={{flex:1}}>
-        <Animated.View style={[styles.viewInput,{minHeight:90}, { marginBottom: 5 }]} >
-        <Swiper cansel={(cpIconLeft || cpIconRight)?false:true} style={{ height:'100%',marginBottom:20,paddingBottom:20}}
-         styleRightIcon={{ top: 37 }}
-          styleLeftIcon={{ top: 37 }}
-          iconLeft={cpIconLeft} 
-          iconRight={cpIconRight}
-          > 
-          <Text style={[styles.textinput,{marginTop:5}]} >تکرار رمز عبور</Text>
-          <Animated.View style={[styles.animatedBorder,
-          _confirmPassword && !cfpsd &&
-          { borderWidth: 1.2, borderColor: iterPlt4, transform: [{ translateX: fadeAnim4 }] }]} >
-            <Input
-              textContentType="password"
-              autoComplete="password"
-              iconPress={() => { setSecure2(!secure2); }}
-              icon={!secure2 ? "eye" : "eye-slash"}
-              secureTextEntry={secure2}
-              defaultValue=""
-              value={confirmPassword}
-              onChangeText={(text) => setConfirmPassword(text)}
-              p=" تکرار رمز عبور "
-              onBlur={() => { set_ConfirmPassword(true); !cfpsd && fadeOut4() }}
-              style={styles.input}
-            />
-          </Animated.View>
-          {_confirmPassword && !cfpsd && <Text style={[styles.textinput, { color: 'red' }]} >
-            {newObj.confirmPassword}
-          </Text>}
-          </Swiper>
-        </Animated.View>
-          </KeyboardAvoidingView >
-        }
-
-
-
-
-        {t && 
-                <KeyboardAvoidingView behavior={"height"} style={{flex:1}}>
-        <Animated.View style={[styles.viewInput,{minHeight:90}, { marginBottom: 5 }]} >
-        <Swiper cansel={(tIconLeft || tIconRight)?false:true} style={{ height:'100%',marginBottom:20,paddingBottom:20}}
-         styleRightIcon={{ top: 37 }}
-          styleLeftIcon={{ top: 37 }}
-          iconLeft={tIconLeft} 
-          iconRight={tIconRight}
-          >        
-             <Text style={[styles.textinput,{marginTop:5}]} >عنوان</Text>
-          <Animated.View style={[
-            styles.animatedBorder
-            , _title && !titl &&
-            {
-              borderWidth: 1.2, borderColor: iterPlt5,
-              transform: [{ translateX: fadeAnim5 }]
-            }]} >
-            <Input
-              icon="header"
-              p=" عنوان "
-              value={title}
-              onChangeText={(text) => setTitle(text)}
-              onBlur={() => { set_Title(true); !titl && fadeOut5() }}
-              style={[styles.input]}
-            />
-          </Animated.View>
-          {_title && !titl && <Text style={[styles.textinput, { color: 'red' }]} >
-            {newObj.title}
-          </Text>
           }
-          </Swiper>
-        </Animated.View>
-        </KeyboardAvoidingView>
-        }
-
-
-
-
-
-        {pr && 
-        <KeyboardAvoidingView behavior={"height"} style={{flex:1}}>
-        <Animated.View style={[styles.viewInput,{minHeight:90}, { marginBottom: 5 }, 
-          !prc && { transform: [{ translateX: fadeAnim6 }] }]} >
-       <Swiper cansel={(prIconLeft || prIconRight)?false:true} style={{ height:'100%',marginBottom:20,paddingBottom:20}}
-         styleRightIcon={{ top: 37 }}
-          styleLeftIcon={{ top: 37 }}
-          iconLeft={prIconLeft} 
-          iconRight={prIconRight}>   
-          <Text style={[styles.textinput, {marginTop:5} ]} >قیمت</Text>
-          <Animated.View style={[styles.animatedBorder,
-          (_price && !prc) &&
-          { borderWidth: 1.2, borderColor: iterPlt6 }]} >
-            <Input p=" قیمت "
-              icon="dollar"
-              keyboardType="numeric"
-              value={price}
-              onChangeText={(text) => setPrice(text)}
-              onBlur={() => { set_Price(true); !prc && fadeOut6() }}
-              style={styles.input}
-            />
-          </Animated.View>
-          {_price && !prc && <Text style={[styles.textinput, { color: 'red' }]} >
-            {newObj.price}
-          </Text>}
-          </Swiper>
-        </Animated.View>
-        </KeyboardAvoidingView>
-        }
 
 
 
 
 
 
-        {im && 
-        <View style={{flex:1}}>
-        <Animated.View style={[styles.viewInput,{minHeight:90}, { marginBottom: 5 }]} >
-        <Swiper cansel={(imIconLeft || imIconRight)?false:true} style={{ height:'100%',marginBottom:20,paddingBottom:20}}
-         styleRightIcon={{ top: 37 }}
-          styleLeftIcon={{ top: 37 }}
-          iconLeft={imIconLeft} 
-          iconRight={imIconRight}
-          > 
-          <Text style={[styles.textinput,{marginTop:5}]} >گالری</Text>
-          <Animated.View style={[styles.animatedBorder,
-          _imageUrl && !img &&
-          {
-            borderWidth: 1.2, borderColor: iterPlt7,
-            transform: [{ translateX: fadeAnim7 }]
-          }]} >
-            <Input
-              editable={false}
-              p=" انتخاب از گالری "
-              iconPress={pickImage}
-              onPressOut={pickImage}
-              icon={'image'}
-              value={imageUrl && imageUrl.name}
-              onBlur={() => { set_ImageUrl(true); !img && fadeOut7() }}
-              style={styles.input}
-            />
-          </Animated.View>
-          {_imageUrl && !img && <Text style={[styles.textinput, { color: 'red' }]} >
-            {newObj.imageUrl}
-          </Text>}
-          </Swiper>
-        </Animated.View>
-        </View>
-        }
+
+          {e &&
+            <KeyboardAvoidingView behavior={"height"} style={{ flex: 1 }}>
+              <Animated.View style={[styles.viewInput, { minHeight: 90 }, { marginBottom: 5 },
+              !eml && { transform: [{ translateX: fadeAnim2 }] }]} >
+                <Swiper cansel={(eIconLeft || eIconRight) ? false : true} style={{ height: '100%', marginBottom: 20, paddingBottom: 20 }}
+                  styleRightIcon={{ top: 37 }}
+                  styleLeftIcon={{ top: 37 }}
+                  iconLeft={eIconLeft}
+                  iconRight={eIconRight}>
+                  <Text style={[styles.textinput, { marginTop: 5 }]} >ایمیل</Text>
+                  <Animated.View style={[styles.animatedBorder, _email && !eml &&
+                    { borderWidth: 1.2, borderColor: iterPlt2 }]} >
+                    <Input p=" ایمیل "
+                      textContentType="emailAddress"
+                      autoComplete="email"
+                      icon="envelope"
+                      keyboardType="email-address"
+                      defaultValue=""
+                      value={email}
+                      onChangeText={(text) => setemail(text)}
+                      onBlur={() => { set_Email(true); !eml && fadeOut2() }}
+                      style={styles.input}
+                    />
+                  </Animated.View>
+                  {_email && !eml && <Text style={[styles.textinput, { color: 'red' }]} >
+                    {newObj.email}
+                  </Text>}
+                </Swiper>
+              </Animated.View>
+            </KeyboardAvoidingView>
+          }
 
 
 
 
 
 
-        {i && 
-        <KeyboardAvoidingView behavior={"height"} style={{flex:1}}>
-        <Animated.View style={[styles.viewInput,{minHeight:90}, { marginBottom: 5 }]} >
-        <Swiper cansel={(iIconLeft || iIconRight)?false:true} style={{ height:'100%',marginBottom:20,paddingBottom:20}}
-         styleRightIcon={{ top: 37 }}
-          styleLeftIcon={{ top: 37 }}
-          iconLeft={iIconLeft} 
-          iconRight={iIconRight}
-          > 
-          <Text style={[styles.textinput,{marginTop:5}]} >توضیحات</Text>
-          <Animated.View style={[styles.animatedBorder,
-          _info && !inf &&
-          {
-            borderWidth: 1.2, borderColor: iterPlt8
-            , transform: [{ translateX: fadeAnim8 }]
-          }]} >
-            <Input
-              icon={'info'}
-              value={info}
-              onChangeText={(text) => setInfo(text)}
-              p=" توضیحات "
-              onBlur={() => { set_Info(true); !inf && fadeOut8() }}
-              style={styles.input}
-            />
-          </Animated.View>
-          {_info && !inf && <Text style={[styles.textinput, { color: 'red' }]} >
-            {newObj.info}
-          </Text>}
-       </Swiper>
-      </Animated.View>
-      </KeyboardAvoidingView>
-      }
+          {ph &&
+            <KeyboardAvoidingView behavior={"height"} style={{ flex: 1 }}>
+              <Animated.View style={[styles.viewInput, { minHeight: 90 }, { marginBottom: 5 },
+              !pon && { transform: [{ translateX: fadeAnimPh }] }]} >
+                <Swiper cansel={(phIconLeft || phIconRight) ? false : true} style={{ height: '100%', marginBottom: 20, paddingBottom: 20 }}
+                  styleRightIcon={{ top: 37 }}
+                  styleLeftIcon={{ top: 37 }}
+                  iconLeft={phIconLeft}
+                  iconRight={phIconRight}>
+                  <Text style={[styles.textinput, { marginTop: 5 }]} >شماره تلفن</Text>
+                  <Animated.View style={[styles.animatedBorder, _phone && !pon &&
+                    { borderWidth: 1.2, borderColor: iterPlt }]} >
+                    <Input p=" شماره تلفن "
+                      textContentType="telephoneNumber"
+                      autoComplete="cc-number"
+                      icon="phone"
+                      keyboardType="phone-pad"
+                      value={phone}
+                      onChangeText={(text) => setphone(text)}
+                      onBlur={() => { set_Phone(true); !pon && fadeOutPh() }}
+                      style={styles.input}
+                    />
+                  </Animated.View>
+                  {_phone && !pon && <Text style={[styles.textinput, { color: 'red' }]} >
+                    {newObj.phone}
+                  </Text>}
+                </Swiper>
+              </Animated.View>
+            </KeyboardAvoidingView>
+          }
 
 
 
 
 
 
-        {m && 
-        <KeyboardAvoidingView behavior={"height"} style={{flex:1,marginBottom:10}}>
-        <View style={[styles.viewInput, { flexGrow: 2.2,minHeight:90, marginBottom:20,marginTop:1 }]} >
-          <Text style={[styles.textinput,{marginTop:5}]}>ارسال پیام</Text>
-          <View style={[{ height: '80.7%', marginBottom: 5 },
-          _message && !msg && { borderWidth: 1.2, borderColor: '#f22', borderRadius: 5 }]} >
-            <Input
-              multiline
-              value={message}
-              onChangeText={(text) => setMessage(text)}
-              p="ارسال پیام"
-              onBlur={() => set_Message(true)}
-              style={[styles.input,{minHeight:90}]}
-            />
-          </View>
-          {_message && !msg && <Text style={[styles.textinput, { color: 'red' }]} >
-            {newObj.message}
-          </Text>}
-        </View>
-        </KeyboardAvoidingView>
-        }
 
 
 
-{ch &&
-        <View behavior={"height"} style={{flex:.5,justifyContent:'center'}}>
-          <View style={{ marginVertical: 10 }} >
-            <View style={[styles.viewCheckbox, { flexGrow: .4, maxHeight: 20 }]}>
-              <CheckBox show={!checkText?show:remember} onPress={() => { !checkText && setShow(!show); checkText && setRemember(!remember) }} />
-              <Text onPress={(e) => console.log(e.nativeEvent.text)} style={{ marginLeft: 11 }} >{checkText ? checkText : "موافقت با قوانین"}</Text>
+
+          {p &&
+            <KeyboardAvoidingView behavior={"height"} style={{ flex: 1 }}>
+              <Animated.View style={[styles.viewInput, { minHeight: 90 }, { marginBottom: 5 }]} >
+                <Swiper cansel={(pIconLeft || pIconRight) ? false : true} style={{ height: '100%', marginBottom: 20, paddingBottom: 20 }}
+                  styleRightIcon={{ top: 37 }}
+                  styleLeftIcon={{ top: 37 }}
+                  iconLeft={pIconLeft}
+                  iconRight={pIconRight}
+                >
+                  <Text style={[styles.textinput, { marginTop: 5 }]} >رمز عبور</Text>
+                  <Animated.View style={[styles.animatedBorder, _password && !psd &&
+                  {
+                    borderWidth: 1.2, borderColor: iterPlt3, transform: [{ translateX: fadeAnim3 }]
+                  }]} >
+                    <Input p=" رمز عبور "
+                      textContentType="password"
+                      autoComplete="password"
+                      iconPress={() => { setSecure(!secure); }}
+                      icon={!secure ? "eye" : "eye-slash"}
+                      secureTextEntry={secure}
+                      defaultValue=""
+                      value={password}
+                      onChangeText={(text) => setPassword(text)}
+                      onBlur={() => { set_Password(true); !psd && fadeOut3() }}
+                      style={styles.input}
+                    />
+                  </Animated.View>
+                  {_password && !psd && <Text style={[styles.textinput, { color: 'red' }]} >
+                    {newObj.password}
+                  </Text>}
+                </Swiper>
+              </Animated.View>
+            </KeyboardAvoidingView>
+          }
+
+
+
+
+
+          {cp &&
+            <KeyboardAvoidingView behavior={"height"} style={{ flex: 1 }}>
+              <Animated.View style={[styles.viewInput, { minHeight: 90 }, { marginBottom: 5 }]} >
+                <Swiper cansel={(cpIconLeft || cpIconRight) ? false : true} style={{ height: '100%', marginBottom: 20, paddingBottom: 20 }}
+                  styleRightIcon={{ top: 37 }}
+                  styleLeftIcon={{ top: 37 }}
+                  iconLeft={cpIconLeft}
+                  iconRight={cpIconRight}
+                >
+                  <Text style={[styles.textinput, { marginTop: 5 }]} >تکرار رمز عبور</Text>
+                  <Animated.View style={[styles.animatedBorder,
+                  _confirmPassword && !cfpsd &&
+                  { borderWidth: 1.2, borderColor: iterPlt4, transform: [{ translateX: fadeAnim4 }] }]} >
+                    <Input
+                      textContentType="password"
+                      autoComplete="password"
+                      iconPress={() => { setSecure2(!secure2); }}
+                      icon={!secure2 ? "eye" : "eye-slash"}
+                      secureTextEntry={secure2}
+                      defaultValue=""
+                      value={confirmPassword}
+                      onChangeText={(text) => setconfirmPassword(text)}
+                      p=" تکرار رمز عبور "
+                      onBlur={() => { set_ConfirmPassword(true); !cfpsd && fadeOut4() }}
+                      style={styles.input}
+                    />
+                  </Animated.View>
+                  {_confirmPassword && !cfpsd && <Text style={[styles.textinput, { color: 'red' }]} >
+                    {newObj.confirmPassword}
+                  </Text>}
+                </Swiper>
+              </Animated.View>
+            </KeyboardAvoidingView >
+          }
+
+
+
+
+          {t &&
+            <KeyboardAvoidingView behavior={"height"} style={{ flex: 1 }}>
+              <Animated.View style={[styles.viewInput, { minHeight: 90 }, { marginBottom: 5 }]} >
+                <Swiper cansel={(tIconLeft || tIconRight) ? false : true} style={{ height: '100%', marginBottom: 20, paddingBottom: 20 }}
+                  styleRightIcon={{ top: 37 }}
+                  styleLeftIcon={{ top: 37 }}
+                  iconLeft={tIconLeft}
+                  iconRight={tIconRight}
+                >
+                  <Text style={[styles.textinput, { marginTop: 5 }]} >عنوان</Text>
+                  <Animated.View style={[
+                    styles.animatedBorder
+                    , _title && !titl &&
+                    {
+                      borderWidth: 1.2, borderColor: iterPlt5,
+                      transform: [{ translateX: fadeAnim5 }]
+                    }]} >
+                    <Input
+                      icon="header"
+                      p=" عنوان "
+                      value={title}
+                      onChangeText={(text) => settitle(text)}
+                      onBlur={() => { set_Title(true); !titl && fadeOut5() }}
+                      style={[styles.input]}
+                    />
+                  </Animated.View>
+                  {_title && !titl && <Text style={[styles.textinput, { color: 'red' }]} >
+                    {newObj.title}
+                  </Text>
+                  }
+                </Swiper>
+              </Animated.View>
+            </KeyboardAvoidingView>
+          }
+
+
+
+
+
+          {pr &&
+            <KeyboardAvoidingView behavior={"height"} style={{ flex: 1 }}>
+              <Animated.View style={[styles.viewInput, { minHeight: 90 }, { marginBottom: 5 },
+              !prc && { transform: [{ translateX: fadeAnim6 }] }]} >
+                <Swiper cansel={(prIconLeft || prIconRight) ? false : true} style={{ height: '100%', marginBottom: 20, paddingBottom: 20 }}
+                  styleRightIcon={{ top: 37 }}
+                  styleLeftIcon={{ top: 37 }}
+                  iconLeft={prIconLeft}
+                  iconRight={prIconRight}>
+                  <Text style={[styles.textinput, { marginTop: 5 }]} >قیمت</Text>
+                  <Animated.View style={[styles.animatedBorder,
+                  (_price && !prc) &&
+                  { borderWidth: 1.2, borderColor: iterPlt6 }]} >
+                    <Input p=" قیمت "
+                      icon="dollar"
+                      keyboardType="numeric"
+                      value={price}
+                      onChangeText={(text) => setprice(text)}
+                      onBlur={() => { set_Price(true); !prc && fadeOut6() }}
+                      style={styles.input}
+                    />
+                  </Animated.View>
+                  {_price && !prc && <Text style={[styles.textinput, { color: 'red' }]} >
+                    {newObj.price}
+                  </Text>}
+                </Swiper>
+              </Animated.View>
+            </KeyboardAvoidingView>
+          }
+
+
+
+
+
+
+          {im &&
+            <View style={{ flex: 1 }}>
+              <Animated.View style={[styles.viewInput, { minHeight: 90 }, { marginBottom: 5 }]} >
+                <Swiper cansel={(imIconLeft || imIconRight) ? false : true} style={{ height: '100%', marginBottom: 20, paddingBottom: 20 }}
+                  styleRightIcon={{ top: 37 }}
+                  styleLeftIcon={{ top: 37 }}
+                  iconLeft={imIconLeft}
+                  iconRight={imIconRight}
+                >
+                  <Text style={[styles.textinput, { marginTop: 5 }]} >گالری</Text>
+                  <Animated.View style={[styles.animatedBorder,
+                  _imageUrl && !img &&
+                  {
+                    borderWidth: 1.2, borderColor: iterPlt7,
+                    transform: [{ translateX: fadeAnim7 }]
+                  }]} >
+                    <Input
+                      editable={false}
+                      p=" انتخاب از گالری "
+                      iconPress={pickImage}
+                      onPressOut={pickImage}
+                      icon={'image'}
+                      value={imageUrl && imageUrl.name}
+                      onBlur={() => { set_ImageUrl(true); !img && fadeOut7() }}
+                      style={styles.input}
+                    />
+                  </Animated.View>
+                  {_imageUrl && !img && <Text style={[styles.textinput, { color: 'red' }]} >
+                    {newObj.imageUrl}
+                  </Text>}
+                </Swiper>
+              </Animated.View>
             </View>
-            {_checkbox && show == false && <Text style={{ color: 'red', alignSelf: 'flex-start' }} >پرکردن فیلد الزامی هست</Text>}
-            </View>
-        </View>
-            }
+          }
 
 
-        {c &&
-          <>
-        <KeyboardAvoidingView behavior={"height"} style={{flex:1}}>
-            <View style={[styles.viewCaptcha, { flexGrow: .5 }]}>
 
-              <View style={styles.containImageCaptcha}>
-                <Image source={{ uri: `${host}/captcha.png/${rand}` }} style={styles.imageCaptcha} />
+
+
+
+          {i &&
+            <KeyboardAvoidingView behavior={"height"} style={{ flex: 1 }}>
+              <Animated.View style={[styles.viewInput, { minHeight: 90 }, { marginBottom: 5 }]} >
+                <Swiper cansel={(iIconLeft || iIconRight) ? false : true} style={{ height: '100%', marginBottom: 20, paddingBottom: 20 }}
+                  styleRightIcon={{ top: 37 }}
+                  styleLeftIcon={{ top: 37 }}
+                  iconLeft={iIconLeft}
+                  iconRight={iIconRight}
+                >
+                  <Text style={[styles.textinput, { marginTop: 5 }]} >توضیحات</Text>
+                  <Animated.View style={[styles.animatedBorder,
+                  _info && !inf &&
+                  {
+                    borderWidth: 1.2, borderColor: iterPlt8
+                    , transform: [{ translateX: fadeAnim8 }]
+                  }]} >
+                    <Input
+                      icon={'info'}
+                      value={info}
+                      onChangeText={(text) => setInfo(text)}
+                      p=" توضیحات "
+                      onBlur={() => { set_Info(true); !inf && fadeOut8() }}
+                      style={styles.input}
+                    />
+                  </Animated.View>
+                  {_info && !inf && <Text style={[styles.textinput, { color: 'red' }]} >
+                    {newObj.info}
+                  </Text>}
+                </Swiper>
+              </Animated.View>
+            </KeyboardAvoidingView>
+          }
+
+
+
+
+
+
+          {m &&
+            <KeyboardAvoidingView behavior={"height"} style={{ flex: 1, marginBottom: 10 }}>
+              <View style={[styles.viewInput, { flexGrow: 2.7, height:110,minHeight: 110, marginBottom: 20, marginTop: 1 }]} >
+                <Text style={[styles.textinput, { marginTop: 5 }]}>ارسال پیام</Text>
+                <View style={[{ height: '80.7%', marginBottom: 5 },
+                _message && !msg && { borderWidth: 1.2, borderColor: '#f22', borderRadius: 5 }]} >
+                  <Input
+                    multiline
+                    value={message}
+                    onChangeText={(text) => setmessage(text)}
+                    p="ارسال پیام"
+                    onBlur={() => set_Message(true)}
+                    style={[styles.input, { height: 110 }]}
+                  />
+                </View>
+                {_message && !msg && <Text style={[styles.textinput, { color: 'red' }]} >
+                  {newObj.message}
+                </Text>}
               </View>
-              <Icon name="refresh" color="#66bbff" size={22}
-                style={styles.iconCaptcha}
-                onPressIn={()=>setchangeRand(true)}
-                onPress={() => {
-                  setShow2(!show2)
-                  refInput.setNativeProps({ text: '' })
-                }} />
-              <TextInput
-                ref={(e) => refInput = e}
-                keyboardType="numeric"
-                placeholder="کد امنیتی" style={[styles.TextInput, { borderColor: '#666' }, rand != captcha && _captcha && { borderColor: '#a22' }]}
-                onChangeText={text => setCaptcha(text)} />
+            </KeyboardAvoidingView>
+          }
+
+
+
+
+          {
+            _input &&
+            <KeyboardAvoidingView behavior={"height"} style={{ flex: 1 }}>
+              <View style={[styles.viewInput, { minHeight: 90 }, { marginBottom: 5 }]} >
+                <Input
+                  textContentType="telephoneNumber"
+                  autoComplete="cc-number"
+                  icon="phone"
+                  keyboardType="phone-pad"
+                  value={input}
+                  p={'ادمین جدید'}
+                  onChangeText={(text) => setinput(text)}
+                  style={[styles.input]}
+                />
+              </View>
+            </KeyboardAvoidingView>
+
+          }
+
+
+
+
+
+
+        {
+            $code &&
+            <KeyboardAvoidingView behavior={"height"} style={{ flex: 1 }}>
+              <View style={[styles.viewInput, { minHeight: 90 }, { marginBottom: 5 }]} >
+                <Input
+                  textContentType="telephoneNumber"
+                  autoComplete="cc-number"
+                  icon="code"
+                  keyboardType="phone-pad"
+                  value={code}
+                  p={'کد ورود'}
+                  onChangeText={(text) => setcode(text)}
+                  style={[styles.input]}
+                />
+              </View>
+            </KeyboardAvoidingView>
+          }
+
+
+
+
+
+
+          {ch &&
+            <View behavior={"height"} style={{ flex: .5, justifyContent: 'center' }}>
+              <View style={{ marginVertical: 10 }} >
+                <View style={[styles.viewCheckbox, { flexGrow: .4, maxHeight: 20 }]}>
+                  <CheckBox show={!checkText?show:changeremember} setshow={!checkText?setshow:setchangeremember} />
+                  <Text onPress={(e) => console.log(e.nativeEvent.text)} style={{ marginLeft: 11 }} >{checkText ? checkText : "موافقت با قوانین"}</Text>
+                </View>
+                {_checkbox && show == false && <Text style={{ color: 'red', alignSelf: 'flex-start' }} >پرکردن فیلد الزامی هست</Text>}
+              </View>
             </View>
-            {rand != captcha && _captcha &&
-              <Text style={{ color: 'red', width: captcha ? 280 : 260 }} >
-                {captcha ?
-                  " کد وارد شده اشتباه هست"
-                  :
-                  "لطفا کادر را پر کنید"
+          }
+
+
+          {c &&
+            <>
+              <KeyboardAvoidingView behavior={"height"} style={{ flex: 1 }}>
+                <View style={[styles.viewCaptcha, { flexGrow: .5 }]}>
+
+                  <View style={styles.containImageCaptcha}>
+                    <Image source={{ uri: `${host}/captcha.png/${rand}` }} style={styles.imageCaptcha} />
+                  </View>
+                  <Icon name="refresh" color="#66bbff" size={22}
+                    style={styles.iconCaptcha}
+                    onPressIn={() => setchangeRand(true)}
+                    onPress={() => {
+                      setShow2(!show2)
+                      this.refInput && this.refInput.setNativeProps({ text: '' })
+                    }} />
+                  <TextInput
+                    ref={(e) => { this.refInput = e }}
+                    keyboardType="numeric"
+                    placeholder="کد امنیتی" style={[styles.TextInput, { borderColor: '#666' }, rand != captcha && _captcha && { borderColor: '#a22' }]}
+                    onChangeText={text => setcaptcha(text)} />
+                </View>
+                {rand != captcha && _captcha &&
+                  <Text style={{ color: 'red', width: captcha ? 280 : 260 }} >
+                    {captcha !== true ?
+                      " کد وارد شده اشتباه هست"
+                      :
+                      "لطفا کادر را پر کنید"
+                    }
+                  </Text>}
+              </KeyboardAvoidingView>
+            </>
+          }
+
+
+
+
+          {children &&
+            <View behavior={"height"} style={{ flex: 1 }}>
+
+              <View style={[styles.viewChildren, { flexGrow: .4 }]}>
+                <Text onPress={(e) => console.log(e.nativeEvent.text)}
+                  style={{ color: '#0cf' }} >{children}</Text>
+              </View>
+            </View>
+          }
+
+
+
+
+          {s &&
+            <View behavior={"height"} style={{ flex: 1 }}>
+              <View style={{ minHeight: 42, maxHeight: 45, flexGrow: 1, alignSelf: 'center', alignItems: 'center', justifyContent: 'space-between', marginBottom: 5, marginTop: 20 }}>
+                <View style={{ flexGrow: .5, minHeight: 40, flexDirection: 'row-reverse', alignItems: 'center' }} >
+
+                  {!star1 ?
+                    <Pressable style={{ height: 40, justifyContent: 'center', marginRight: 7 }}
+                      onPress={() => setstar1(true)}>
+                      <Icon5 name='star' size={22} color='orange' />
+                    </Pressable>
+                    :
+                    <Pressable style={{ height: 40, justifyContent: 'center', marginRight: 7 }}
+                      onPress={() => { setstar1(false); setstar2(false); setstar3(false); setstar4(false); setstar5(false) }}>
+                      <Icon name='star' size={26} color='orange' />
+                    </Pressable>
+                  }
+
+                  {!star2 ?
+                    <Pressable style={{ height: 40, justifyContent: 'center', marginRight: 7 }}
+                      onPress={() => { setstar1(true); setstar2(true); }}>
+                      <Icon5 name='star' size={22} color='orange' />
+                    </Pressable>
+                    :
+                    <Pressable style={{ height: 40, justifyContent: 'center', marginRight: 7 }}
+                      onPress={() => { setstar2(false); setstar3(false); setstar4(false); setstar5(false) }}>
+                      <Icon name='star' size={26} color='orange' />
+                    </Pressable>
+                  }
+
+                  {!star3 ?
+                    <Pressable style={{ height: 40, justifyContent: 'center', marginRight: 7 }}
+                      onPress={() => { setstar1(true); setstar2(true); setstar3(true); }}>
+                      <Icon5 name='star' size={22} color='orange' />
+                    </Pressable>
+                    :
+                    <Pressable style={{ height: 40, justifyContent: 'center', marginRight: 7 }}
+                      onPress={() => { setstar5(false); setstar4(false); setstar3(false); }}>
+                      <Icon name='star' size={26} color='orange' />
+                    </Pressable>
+                  }
+
+                  {!star4 ?
+                    <Pressable style={{ height: 40, justifyContent: 'center', marginRight: 7 }}
+                      onPress={() => { setstar1(true); setstar2(true); setstar3(true); setstar4(true); }}>
+                      <Icon5 name='star' size={22} color='orange' />
+                    </Pressable>
+                    :
+                    <Pressable style={{ height: 40, justifyContent: 'center', marginRight: 7 }}
+                      onPress={() => { setstar4(false); setstar5(false); }}>
+                      <Icon name='star' size={26} color='orange' />
+                    </Pressable>
+                  }
+
+                  {!star5 ?
+                    <Pressable style={{ height: 40, justifyContent: 'center', marginRight: 7 }}
+                      onPress={() => { setstar1(true); setstar2(true); setstar3(true); setstar4(true); setstar5(true) }}>
+                      <Icon5 name='star' size={22} color='orange' />
+                    </Pressable>
+                    :
+                    <Pressable style={{ height: 40, justifyContent: 'center', marginRight: 7 }}
+                      onPress={() => { setstar5(false) }}>
+                      <Icon name='star' size={26} color='orange' />
+                    </Pressable>
+                  }
+
+
+
+
+                </View>
+
+
+                {_allstar && newObj.allstar != allstar &&
+                  <View style={{ width: '100%', alignItems: 'center', height: 'auto', marginTop: 5 }} >
+                    <Text style={[{ color: 'red' }]} >
+                      {newObj.allstar}
+                    </Text>
+                  </View>
                 }
-              </Text>}
-        </KeyboardAvoidingView>
-          </>
-        }
 
 
 
-
-        {children &&
-        <View behavior={"height"} style={{flex:1}}>
-
-          <View style={[styles.viewChildren, { flexGrow: .4 }]}>
-            <Text onPress={(e) => console.log(e.nativeEvent.text)}
-              style={{ color: '#0cf' }} >{children}</Text>
-          </View>
-        </View>
-          }
-
-
-
-
-        {s &&
-        <View behavior={"height"} style={{flex:1}}>
-          <View style={{ minHeight:42,maxHeight:45,flexGrow:1,alignSelf: 'center', alignItems: 'center', justifyContent: 'space-between', marginBottom: 5, marginTop: 20 }}>
-            <View style={{ flexGrow: .5, minHeight: 40, flexDirection: 'row-reverse', alignItems: 'center' }} >
-
-              {!star1 ?
-                <Pressable style={{ height: 40, justifyContent: 'center', marginRight: 7 }}
-                  onPress={() => setstar1(true)}>
-                  <Icon5 name='star' size={22} color='orange' />
-                </Pressable>
-                :
-                <Pressable style={{ height: 40, justifyContent: 'center', marginRight: 7 }}
-                  onPress={() => { setstar1(false); setstar2(false); setstar3(false); setstar4(false); setstar5(false) }}>
-                  <Icon name='star' size={26} color='orange' />
-                </Pressable>
-              }
-
-              {!star2 ?
-                <Pressable style={{ height: 40, justifyContent: 'center', marginRight: 7 }}
-                  onPress={() => { setstar1(true); setstar2(true); }}>
-                  <Icon5 name='star' size={22} color='orange' />
-                </Pressable>
-                :
-                <Pressable style={{ height: 40, justifyContent: 'center', marginRight: 7 }}
-                  onPress={() => { setstar2(false); setstar3(false); setstar4(false); setstar5(false) }}>
-                  <Icon name='star' size={26} color='orange' />
-                </Pressable>
-              }
-
-              {!star3 ?
-                <Pressable style={{ height: 40, justifyContent: 'center', marginRight: 7 }}
-                  onPress={() => { setstar1(true); setstar2(true); setstar3(true); }}>
-                  <Icon5 name='star' size={22} color='orange' />
-                </Pressable>
-                :
-                <Pressable style={{ height: 40, justifyContent: 'center', marginRight: 7 }}
-                  onPress={() => { setstar5(false); setstar4(false); setstar3(false); }}>
-                  <Icon name='star' size={26} color='orange' />
-                </Pressable>
-              }
-
-              {!star4 ?
-                <Pressable style={{ height: 40, justifyContent: 'center', marginRight: 7 }}
-                  onPress={() => { setstar1(true); setstar2(true); setstar3(true); setstar4(true); }}>
-                  <Icon5 name='star' size={22} color='orange' />
-                </Pressable>
-                :
-                <Pressable style={{ height: 40, justifyContent: 'center', marginRight: 7 }}
-                  onPress={() => { setstar4(false); setstar5(false); }}>
-                  <Icon name='star' size={26} color='orange' />
-                </Pressable>
-              }
-
-              {!star5 ?
-                <Pressable style={{ height: 40, justifyContent: 'center', marginRight: 7 }}
-                  onPress={() => { setstar1(true); setstar2(true); setstar3(true); setstar4(true); setstar5(true) }}>
-                  <Icon5 name='star' size={22} color='orange' />
-                </Pressable>
-                :
-                <Pressable style={{ height: 40, justifyContent: 'center', marginRight: 7 }}
-                  onPress={() => { setstar5(false) }}>
-                  <Icon name='star' size={26} color='orange' />
-                </Pressable>
-              }
-
-
-
-
-            </View>
-
-
-            {_allstar && newObj.allstar != allstar &&
-              <View style={{ width: '100%', alignItems: 'center', height: 'auto', marginTop: 5 }} >
-                <Text style={[{ color: 'red' }]} >
-                  {newObj.allstar}
-                </Text>
               </View>
-            }
-
-
-
-          </View>
 
 
             </View>
-        }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<KeyboardAvoidingView behavior={"height"} style={{flex:1}}>
-
-        <Button
-          onPressIn={() => {
-            set_Fullname(true);
-            set_Email(true);
-            set_Password(true);
-            set_ConfirmPassword(true);
-            set_Message(true);
-            set_Checkbox(true);
-            set_Captcha(true)
-            set_Title(true)
-            set_Price(true)
-            set_ImageUrl(true)
-            set_Info(true)
-            set_Allstar(true)
-            set_googleCaptcha(true)
-            set_Phone(true)
-          }}
-          onPress={
-            flm && eml && psd && cfpsd && msg && cap && show == true
-              && titl && prc && img && inf && ky && pon
-              ?
-              onPress
-              :
-              null
           }
-          style={[styles.btn]} >
-          click
-        </Button>
+
+
+
+
+
+
+
+
+
+          <KeyboardAvoidingView behavior={"height"} style={{ flex: 1 }}>
+
+            <Button
+              onPressIn={() => {
+                setremember(changeremember ? (60000 * 60 * 24 * 365) : ('24h'))
+                set_Fullname(true);
+                set_Email(true);
+                set_Password(true);
+                set_ConfirmPassword(true);
+                set_Message(true);
+                set_Checkbox(checkText?false:true);
+                set_Captcha(true)
+                set_Title(true)
+                set_Price(true)
+                set_ImageUrl(true)
+                set_Info(true)
+                set_Allstar(true)
+                set_googleCaptcha(true)
+                set_Phone(true)
+                
+              }}
+              onPress={()=>{
+              if (flm && eml && psd && cfpsd && msg && cap && show && titl && prc && img && inf && pon && star1) {
+                onPress()
+                interval = setTimeout(() => {
+                setRand(parseInt(Math.random() * 9000 + 1000))
+                this.refInput && this.refInput.setNativeProps({text: '' })
+                setcaptcha(true)
+                }, 1500) 
+                
+              }
+                else {
+                setRand(parseInt(Math.random() * 9000 + 1000))
+                this.refInput && this.refInput.setNativeProps({text: '' })
+              }
+                  
+          }}
+
+            style={[styles.btn]} >
+            click
+          </Button>
         </KeyboardAvoidingView>
 
 
 
       </View>
-      </View>
-    </_scrollView>
+    </View>
+    </_scrollView >
   )
 
 }
-// onPress={
-//   flm && eml && psd && cfpsd && msg && cap && show == true
-//    && titl && prc && img && inf
-//     ?
-//     onPress :
-//     () => alert('kkataa')}
 
-// {/*  setCheckbox(e.target._internalFiberInstanceHandleDEV.memoizedProps.checked) */}
 export default Form
 const styles = StyleSheet.create({
   containerScrollView: {
     height: '100%',
-    minWidth:'100%',
+    minWidth: '100%',
   },
   closeRecaptcha: {
     fontSize: 31,
@@ -1102,9 +1127,9 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 1, height: 1 }
   },
   googleRecaptcha: {
-    transform:[{scale:.85}],
+    transform: [{ scale: .85 }],
     marginBottom: 17,
-    marginTop:15,
+    marginTop: 15,
     flexGrow: 1.5,
     height: 105,
     maxHeight: 115,
@@ -1132,7 +1157,7 @@ const styles = StyleSheet.create({
   },
   containerScrollView: {
     height: '100%',
-    minWidth:'100%',
+    minWidth: '100%',
     backgroundColor: '#f0f0f0',
     borderWidth: .3,
     borderRadius: 5,
@@ -1146,10 +1171,10 @@ const styles = StyleSheet.create({
     }
   },
   viewContainer: {
-    minWidth:'100%',
-    justifyContent:'center',
+    minWidth: '100%',
+    justifyContent: 'center',
 
-    
+
   },
   contentContainerStyle: {
     justifyContent: 'center',
@@ -1244,7 +1269,7 @@ const styles = StyleSheet.create({
     minHeight: 40,
     maxHeight: 45,
     marginTop: 25,
-    marginBottom:10,
+    marginBottom: 10,
     elevation: 2,
     shadowColor: "#000b",
     shadowOpacity: .6,
@@ -1285,11 +1310,11 @@ const styles = StyleSheet.create({
   textinput: {
     height: 19,
     alignSelf: 'flex-start',
-    fontSize:11
+    fontSize: 11
   },
   input: {
     marginBottom: 5,
-    minHeight:50,
+    minHeight: 50,
     minWidth: '90%',
     shadowColor: "#000",
     shadowOpacity: .4,
@@ -1301,7 +1326,7 @@ const styles = StyleSheet.create({
     },
   },
   viewInput: {
-    minWidth:"100%",
+    minWidth: "100%",
     marginBottom: 19,
     flexGrow: 1.5,
     minHeight: 80,

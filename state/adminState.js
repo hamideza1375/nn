@@ -1,10 +1,11 @@
-import { useEffect, useCallback } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { useRoute, useNavigation, useFocusEffect } from '@react-navigation/native';
-import { getSingleTitleFoods, editfood, createchildfood, createfood, deletechildfood, deletefood, getsinglechildfood, editchildfood, unAvailable, createNotification, listAvailable } from "../services/foodService";
-import localStorage from '@react-native-async-storage/async-storage';
+import { getAllAddress, deleteAddress, deleteAllAddress, useradmin, deleteAdmin, getAlluserAdmin, changeAdmin, createfood, editfood, deletefood, createchildfood, editchildfood, deletechildfood, createNotification, unAvailable, listAvailable } from "../services/adminService";
+import { getallchildfood, getsinglechildfood } from "../services/foodService"
+import localStorage from "@react-native-async-storage/async-storage";
+import Alert from '../utils/alert'
 
-
-export function adminState(props) {
+export function adminState(p) {
 
   const route = useRoute()
   const navigation = useNavigation()
@@ -13,24 +14,174 @@ export function adminState(props) {
 
 
 
-  // createfood
-  this.createChild = async () => {
-    await createchildfood(id, { title: props.title, price: props.price, imageUrl: props.imageUrl, info: props.info })
-    props.setTitle('')
-    props.setPrice('')
-    props.setInfo('')
-    props.setImageUrl('')
-    props.setchangeFood(!props.changeFood)
-    navigation.goBack()
-    props.setchangeFood(!props.changeFood)
+
+  this.getAlluserAdmin = async () => {
+    useFocusEffect(useCallback(() => {
+      (async () => {
+        const { data } = await getAlluserAdmin()
+        p.setadmin(data)
+      })()
+    }, []))
   }
 
-  this.EditFood = async () => {
-    useFocusEffect(useCallback(() => {
-      let foodMap = props.foodMap.get(props.route.params.id2);
-      return () => props.foodMap.set(props.route.params.id, foodMap)
-    }, []))
+
+  this.addAdmin = async () => {
+    await useradmin({ phone: p.phone });
+    p.setphone('')
+    navigation.goBack()
+  }
+
+
+  this.deleteAdmin = async () => {
+    await deleteAdmin({ phone: p.phone });
+    p.setphone('')
+    navigation.goBack()
+  }
+
+
+  this.changeAdmin = async () => {
+    await changeAdmin({ adminPhone: p.phone, newAdminPhone: p.input });
+    p.setnavigateProfile(false)
+    p.setnavigateUser(false)
+    p.settokenValue({})
+    p.settoken(false)
+    await localStorage.removeItem("token");
+    await localStorage.removeItem("exp");
+    for (let i of p.foods) {
+      const { data } = await getallchildfood(i._id)
+      for (let item of data.child) {
+        p.map.delete(item._id)
+        p.map.delete(item.title)
+      }
     }
+    p.map.delete('sum')
+    p.map.delete('allprice')
+    p.setallprice(0)
+
+    p.setphone('')
+
+    p.navigation.navigate("Home")
+  }
+
+
+
+  this.totalAllAddress = () => {
+    let total = []
+    useFocusEffect(useCallback(() => {
+      p.allAddress.forEach((address) => {
+        total.push(address.price)
+      })
+      const su = total.length && total.reduce((total, number) => total + number)
+      p.settotalPrices(su);
+
+      localStorage.getItem('totalOldPrice').then((res) => {
+        res && p.setoldPrice(JSON.parse(res))
+      })
+    }, [p.allAddress]))
+  }
+
+
+  // this.getAllAddress = async () => {
+  //   useFocusEffect(useCallback(() => {
+  //     getAllAddress().then(({ data }) => {
+  //       p.setallAddress(data)
+  //       p.set_address(data)
+  //     })
+  //   }, [p.change]))
+  // }
+
+  this.getAllAddress = async () => {
+    useEffect(() => {
+      getAllAddress().then(({ data }) => {
+        p.setallAddress(data)
+        p.set_address(data)
+      })
+    }, [])
+
+    useMemo(() => {
+      setInterval(() => {
+        getAllAddress().then(({ data }) => {
+          if (p.allAddress.length !== data.length)
+            p.setallAddress(data)
+          p.set_address(data)
+        })
+      }, 8000);
+    }, [])
+  }
+
+
+  this.deleteAddress = (_id) => {
+    Alert.alert(
+      "مشتری حذف شود ؟",
+      "",
+      [
+        { text: "Cancel" },
+        { text: "yes", onPress: async () => { await deleteAddress(_id); p.setchange(!p.change); } }
+      ])
+  }
+
+
+  this.deleteAllAddress = () => {
+    Alert.alert(
+      "آیا از حذف تمام مشتریان مطمئنید؟",
+      "",
+      [
+        { text: "Cancel" },
+        {
+          text: "yes", onPress: async () => {
+            Alert.alert(
+              "",
+              "بعد از حذف دیگر قادر به برگرداندن نخواهید بود!!",
+              [
+                { text: "Cancel" },
+                {
+                  text: "yes", onPress: async () => {
+                    await deleteAllAddress(); await localStorage.setItem('totalOldPrice', JSON.stringify(p._moment + '=' + p.totalPrices)); p.setchange(!p.change);
+                  }
+                }])
+          }
+        }])
+  }
+  // address
+
+
+
+
+
+
+
+  this.getEdit = async () => {
+    useFocusEffect(useCallback(() => {
+      (async () => {
+        const { data } = await getsinglechildfood(id, id2)
+        p.settitle(data.child.title)
+        p.setprice(data.child.price.toString())
+        p.setImageUrl(data.child.imageUrl)
+        p.setInfo(data.child.info)
+      })()
+
+      return () => {
+        p.settitle('')
+        p.setprice('')
+        p.setImageUrl('')
+        p.setInfo('')
+      }
+    }, []))
+  }
+
+
+  // createfood
+  this.createChild = async () => {
+    await createchildfood(id, { title: p.title, price: p.price, imageUrl: p.imageUrl, info: p.info })
+    p.settitle('')
+    p.setprice('')
+    p.setInfo('')
+    p.setImageUrl('')
+    p.setchangeFood(!p.changeFood)
+    navigation.goBack()
+    p.setchangeFood(!p.changeFood)
+  }
+
 
   // createfood
 
@@ -38,10 +189,10 @@ export function adminState(props) {
 
   // createpartfood
   this.createFoodAction = async () => {
-    await createfood({ title: props.title, imageUrl: props.imageUrl })
-    props.setchangeFood(!props.changeFood)
-    props.setTitle('')
-    props.setImageUrl('')
+    await createfood({ title: p.title, imageUrl: p.imageUrl })
+    p.setchangeFood(!p.changeFood)
+    p.settitle('')
+    p.setImageUrl('')
     navigation.goBack()
   }
   // createpartfood
@@ -50,132 +201,73 @@ export function adminState(props) {
   // DeleteFood
   this.deleteChildFoodAction = async (id, id2) => {
     await deletechildfood(id, id2)
-    props.setchangeFood(!props.changeFood)
+    p.setchangeFood(!p.changeFood)
   }
   // DeleteFood
 
   this.deleteFoodAction = async (id) => {
     await deletefood(id)
-    props.setchangeFood(!props.changeFood)
+    p.setchangeFood(!p.changeFood)
   }
   // DeleteFoods
 
 
-  // EditeFood
-  this.getEdit = async () => {
-    useEffect(() => {
-      (async () => {
-        const { data } = await getsinglechildfood(id, id2)
-        props.setTitle(data.child.title)
-        props.setPrice(data.child.price.toString())
-        props.setImageUrl(data.child.imageUrl)
-        props.setInfo(data.child.info)
-      })()
-    }, [])
-    useEffect(() => () => {
-      props.setTitle('')
-      props.setPrice('')
-      props.setImageUrl('')
-      props.setInfo('')
-    }, [])
-  }
 
   this.editeFoodAction = async () => {
-   await editchildfood(id, id2, { title: props.title, price: props.price, imageUrl: props.imageUrl, info: props.info })
-   props.setchangeFood(!props.changeFood)
-   navigation.goBack()
+    await editchildfood(id, id2, { title: p.title, price: p.price, imageUrl: p.imageUrl, info: p.info })
+    p.setchangeFood(!p.changeFood)
+    navigation.goBack()
   }
 
   this.unmountEditFood = async () => {
-  useFocusEffect(useCallback(() => {
-    let foodMap = props.foodMap.get(props.route.params.id2);
-    return () => props.foodMap.set(props.route.params.id, foodMap)
-  }, []))
+    useFocusEffect(useCallback(() => {
+      let foodMap = p.foodMap.get(p.route.params.id2);
+      return () => p.foodMap.set(p.route.params.id, foodMap)
+    }, []))
   }
 
-  // EditFood
-  this.getFoodsEdit = async () => {
-    useEffect(() => {
-      (async () => {
-        const { data } = await getSingleTitleFoods(id)
-        props.setTitle(data.title)
-      })()
-
-      return () => {
-        props.setTitle('')
-      }
-    }, [])
-  }
 
 
   this.editeFoods = async () => {
-    await editfood(id,{ title: props.title, imageUrl: props.imageUrl })
+    await editfood(id, { title: p.title, imageUrl: p.imageUrl })
     navigation.goBack()
   }
   //EditeFoods
 
 
 
-    this.available = async (available,id,id2) => {
-    // let {data} = await unAvailable({ available }, id,id2)
-    // await localStorage.setItem(id2,JSON.stringify(data) + ' ' + id)
-    // let filter =[...props.foodMap.get(props.route.params.id)]
-    // let fil = filter.findIndex((food) =>  food._id == id2 ) 
-    // filter[fil].available = available
-    // props.foodMap.set(route.params.id, filter)
-    // const offset = (props.page - 1) * props.pageLimit
-    // const currentCountries = filter.slice(offset, offset + props.pageLimit)
-    // props.setcurrent(currentCountries)
-    await unAvailable({ available }, id,id2)
-    props.setchangeFood(!props.changeFood)
+  this.available = async (available, id, id2) => {
+    await unAvailable({ available }, id, id2)
+    p.setchangeFood(!p.changeFood)
   }
 
 
   this.deleteUnmunt = async (id2) => {
-    // let filter = props.foodMap.get(props.route.params.id).filter((food) =>  food._id !== id2 ) 
-    // props.foodMap.set(route.params.id, filter)
-    // const offset = ((props.page - 1)) * props.pageLimit
-    // const currentCountries = filter.slice(offset, offset + props.pageLimit)
-    // props.setcurrent(currentCountries)
-    props.setchangeFood(!props.changeFood)
+    p.setchangeFood(!p.changeFood)
 
   }
 
 
   this.listAvailable = async () => {
-  useEffect(() => {
-    listAvailable().then(({ data }) => {
-      props.setlist(data)
-    })
-  }, [props.showModal, props.id, props._id ])
+    useFocusEffect(useCallback(() => {
+      listAvailable().then(({ data }) => {
+        p.setlist(data)
+      })
+    }, [p.showModalAvailabe, p.id, p._id]))
   }
 
 
 
   this.sendAvailable = async () => {
-    // let local = await localStorage.getItem(props.id2)
-    // let id = local?.split(" ") && local.split(" ")[1]
-    // let filter = [...props.foodMap.get(id)]
-    // let fil = filter.findIndex((food) => food._id == props.id2)
-    // if (filter[fil]?.available != true) {
-    //   filter[fil].available = true
-    //   props.foodMap.set(id, filter)
-    //   const currentPage = Math.max(0, Math.min(1, filter.length))
-    //   const offset = (currentPage - 1) * props.pageLimit
-    //   const currentCountries = filter.slice(offset, offset + props.pageLimit)
-    //   props.setcurrent(currentCountries)
-    //   await localStorage.removeItem(props.id2)
-    // }
-    await unAvailable({ available: true }, props.id, props._id)
-    props.setass(!props.ass)
-    props.setShowModal(!props.showModal)
-}
+    await unAvailable({ available: true }, p.id, p._id)
+    p.setshowModalAvailabe(!p.showModalAvailabe)
+  }
 
 
 
 
   this.notifee = async () => {
-    await createNotification({title: props.title, message: props.info})
+    await createNotification({ title: p.title, message: p.info })
     navigation.goBack()
   }
 

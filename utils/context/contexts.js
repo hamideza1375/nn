@@ -1,24 +1,10 @@
 import { createContext, useContext, useState } from 'react';
-import { origin } from '../userState';
 import { Dimensions } from 'react-native';
-import { localhost } from '../../services/host.json'
-
+import {localhost} from '../../utils/axios/axios'
 let odd = []
 function State() {
-
-
-  for (let i = 0; i <= 100; i++) {
-    if (i % 2 == 0)
-      odd.push(i)
-  }
-
-
-  let bgColor = (key) => ([{ backgroundColor: odd.includes(key) ? '#555' : '#777' }])
-
   const _width = Dimensions.get('window').width;
   const _height = Dimensions.get('window').height;
-
-
   const [allfood, setallfood] = useState([])
   const [food2, setfood2] = useState([])
   const [show1, setshow1] = useState(true)
@@ -26,29 +12,29 @@ function State() {
   const [token, settoken] = useState('')
   const [tokenValue, settokenValue] = useState({})
   const [allprice, setallprice] = useState('')
-  const [myPhone, setMyPhone] = useState('')
-  const [myCode, setMyCode] = useState('')
-  const [captcha, setCaptcha] = useState(true)
-  const [fullname, setFullname] = useState('')
-  const [email, setEmail] = useState('')
-  const [phone, setPhone] = useState('')
-  const [message, setMessage] = useState('')
-  const [showForm, setShowForm] = useState(false)
+  const [myPhone, setmyPhone] = useState('')
+  const [myCode, setmyCode] = useState('')
+  const [captcha, setcaptcha] = useState(true)
+  const [fullname, setfullname] = useState('')
+  const [email, setemail] = useState('')
+  const [phone, setphone] = useState('')
+  const [message, setmessage] = useState('')
+  const [showForm, setshowForm] = useState(false)
   const [comment, setcomment] = useState('')
   const [allcomment, setallcomment] = useState([])
-  const [show, setShow] = useState(false)
-  const [search1, setSearch1] = useState('')
+  const [show, setshow] = useState(false)
+  const [search1, setsearch1] = useState('')
   const [search, setsearch] = useState([])
   const [search3, setsearch3] = useState('')
-  const [markers, setmarkers] = useState(origin)
+  const [markers, setmarkers] = useState({latitude: 36.224174234928924,longitude: 57.69491965736432,latitudeDelta: 0.01,longitudeDelta: 0.01})
   const [revers, setrevers] = useState({})
   const [allItemLocation, setallItemLocation] = useState({})
   const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
-  const [remember, setRemember] = useState(false)
-  const [checkbox, setCheckbox] = useState()
-  const [title, setTitle] = useState('')
-  const [price, setPrice] = useState('')
+  const [confirmPassword, setconfirmPassword] = useState('')
+  const [remember, setremember] = useState(60000 * 60 * 24 * 365)
+  const [checkbox, setcheckbox] = useState()
+  const [title, settitle] = useState('')
+  const [price, setprice] = useState('')
   const [imageUrl, setImageUrl] = useState('')
   const [info, setInfo] = useState('')
   const [singlefood, setsinglefood] = useState({})
@@ -56,34 +42,30 @@ function State() {
   const [textSearch, settextSearch] = useState('')
   const [navigate, setnavigate] = useState(false)
   const [ass, setass] = useState(true)
-  const [showModal, setShowModal] = useState(false)
+  const [showModal, setshowModal] = useState(false)
   const [current, setcurrent] = useState([])
   const [sercher, setsercher] = useState([])
-  const [srch, setSrch] = useState([])
+  const [srch, setsrch] = useState([])
   const [page, setpage] = useState(1)
   const [currentPage, setcurrentPage] = useState(1)
-  const [pageLimit, setpageLimit] = useState(12)
-
+  const [pageLimit] = useState(8)
   const [piza, setpiza] = useState([])
   const [sandwich, setsandwich] = useState([])
   const [drink, setdrink] = useState([])
   const [star, setstar] = useState()
-  const [orientation, setOrientation] = useState("PORTRAIT")
+  const [orientation, setorientation] = useState("PORTRAIT")
   const [height, setheight] = useState(_height)
   const [width, setwidth] = useState(_width)
   const [allstar, setallstar] = useState(false)
-
   const [navigateProfile, setnavigateProfile] = useState(false)
   const [navigateUser, setnavigateUser] = useState(false)
-
-  const [profile, setProfile] = useState(false)
   const [user, setUser] = useState(false)
   const [ChangeView, setChangeView] = useState(false)
-  const [star1, setstar1] = useState(false)
-  const [star2, setstar2] = useState(false)
-  const [star3, setstar3] = useState(false)
-  const [star4, setstar4] = useState(false)
-  const [star5, setstar5] = useState(false)
+  const [star1, setstar1] = useState(true)
+  const [star2, setstar2] = useState(true)
+  const [star3, setstar3] = useState(true)
+  const [star4, setstar4] = useState(true)
+  const [star5, setstar5] = useState(true)
   const [id3, setid3] = useState()
   const [showForm2, setshowForm2] = useState()
   const [aa, setaa] = useState(false)
@@ -100,7 +82,6 @@ function State() {
   const [msgLength] = useState(new Map())
   const [foodMap] = useState(new Map())
   const [currentMap] = useState(new Map())
-  
   const [localMessage, setlocalMessage] = useState([])
   const [messages, setmessages] = useState([]);
   const [room5, setroom5] = useState([])
@@ -130,10 +111,19 @@ function State() {
   const [splash, setSplash] = useState(true)
   const [region, setregion] = useState({ latitude: 36.224174234928924, longitude: 57.69491965736432, latitudeDelta: 0.01, longitudeDelta: 0.01 })
   const [host] = useState(localhost)
+  const [input,setinput] = useState('')
+  const [showModalAvailabe,setshowModalAvailabe] = useState(false)
+  const [coordinate, setcoordinate] = useState({latitude: 36.224174234928924,longitude: 57.69491965736432,latitudeDelta: 0.01,longitudeDelta: 0.01})
+  const [code, setcode] = useState('')
+  const [changeRegister, setchangeRegister] = useState(false)
 
-
-  this.allState = {
+  return {
     host,
+    changeRegister, setchangeRegister,
+    code, setcode,
+    input,setinput,
+    showModalAvailabe,setshowModalAvailabe,
+    coordinate, setcoordinate,
     currentMap,
     splash, setSplash,
     region, setregion,
@@ -170,7 +160,6 @@ function State() {
     room, setroom,
     aa, setaa,
     odd,
-    bgColor: (key) => bgColor(key),
     id3, setid3,
     showForm2, setshowForm2,
     star1, setstar1,
@@ -181,12 +170,11 @@ function State() {
     navigateProfile, setnavigateProfile,
     ChangeView, setChangeView,
     navigateUser, setnavigateUser,
-    profile, setProfile,
     user, setUser,
     height, setheight,
     allstar, setallstar,
     width, setwidth,
-    orientation, setOrientation,
+    orientation, setorientation,
     star, setstar,
     piza, setpiza,
     sandwich, setsandwich,
@@ -196,8 +184,8 @@ function State() {
     currentPage, setcurrentPage,
     page, setpage,
     sercher, setsercher,
-    srch, setSrch,
-    showModal, setShowModal,
+    srch, setsrch,
+    showModal, setshowModal,
     current, setcurrent,
     ass, setass,
     search, setsearch,
@@ -211,27 +199,27 @@ function State() {
     token, settoken,
     tokenValue, settokenValue,
     allprice, setallprice,
-    myPhone, setMyPhone,
-    myCode, setMyCode,
-    captcha, setCaptcha,
-    fullname, setFullname,
-    email, setEmail,
-    phone, setPhone,
-    message, setMessage,
-    showForm, setShowForm,
+    myPhone, setmyPhone,
+    myCode, setmyCode,
+    captcha, setcaptcha,
+    fullname, setfullname,
+    email, setemail,
+    phone, setphone,
+    message, setmessage,
+    showForm, setshowForm,
     comment, setcomment,
     allcomment, setallcomment,
-    show, setShow,
-    search1, setSearch1,
+    show, setshow,
+    search1, setsearch1,
     markers, setmarkers,
     revers, setrevers,
     allItemLocation, setallItemLocation,
     password, setPassword,
-    confirmPassword, setConfirmPassword,
-    remember, setRemember,
-    checkbox, setCheckbox,
-    title, setTitle,
-    price, setPrice,
+    confirmPassword, setconfirmPassword,
+    remember, setremember,
+    checkbox, setcheckbox,
+    title, settitle,
+    price, setprice,
     imageUrl, setImageUrl,
     info, setInfo,
     singlefood, setsinglefood,
@@ -240,9 +228,7 @@ function State() {
     severalTime, setseveralTime,
     severalShow, setseveralShow,
   }
-
 }
-
-export const state = () => new State()
-export const context = createContext(state.allState);
-export const value = () => useContext(context)
+export const states =()=> State()
+export const contextStates = createContext(states);
+export const context = () => useContext(contextStates)

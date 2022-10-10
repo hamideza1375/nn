@@ -3,7 +3,7 @@ import { Modal, StyleSheet, View } from "react-native";
 import Icon from 'react-native-vector-icons/dist/FontAwesome';
 
 
-export default _Modal = ({style, children, setShow, show, onHide }) => {
+export default _Modal = ({style, children, setshow, show, onHide }) => {
 
   return (
     <View style={[styles.centeredView]}>
@@ -11,7 +11,7 @@ export default _Modal = ({style, children, setShow, show, onHide }) => {
        animationType="fade" transparent={true} visible={show}>
         <View style={[styles.centeredView, ,{backgroundColor: '#6669'}]}>
           <View style={[styles.modalView,style]}>
-            <Icon onPress={() => setShow(false)} name={"remove"} size={22} color="#f55" style={{ position: 'absolute', left: 9, top: 9, zIndex:111 }} />
+            <Icon onPress={() => setshow(false)} name={"remove"} size={22} color="#f55" style={{ position: 'absolute', left: 9, top: 9, zIndex:111 }} />
             {children}
           </View>
         </View>

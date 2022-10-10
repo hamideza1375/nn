@@ -1,117 +1,204 @@
-import React, { useRef, useState } from 'react'
-import { StyleSheet, View, Text, TextInput } from 'react-native'
-import MapView, { Marker } from 'react-native-maps';
-import RNLocation from 'react-native-location';
-import Icon from 'react-native-vector-icons/dist/FontAwesome5';
-import BottomTab from '../../Components/BottomTab'
-import { userState } from '../../state/userState';
-import { bottomProfile } from '../../states/top-bottom';
-import styles from './User.scss';
-import Toast from '../../Components/Toast';
-import { Button } from '../../Components/Html';
-import { foodState } from '../../state/foodState';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from '@react-navigation/native';
+import React, { useCallback, useState } from 'react'
+import { View } from 'react-native';
+import Frame from '../../Components/Frame';
+import { localhost } from '../../utils/axios/axios'
+// console.disableYellowBox = true
 
 const Location = (p) => {
-  _user = new userState(p)
-  const _food = new foodState(p)
-  _user.reversAction()
-  const rum = () => p.search1 && _user.geoCodeAction()
-  const uy = (e) => _user.geoCodeAction2(e)
-
-  const [show, setshow] = useState(true)
-  const bottom = bottomProfile(p)
-  RNLocation.configure({ distanceFilter: 100 })
-  const myRf = useRef()
-
-  const payment = () => {
-    if(!p.plaque && !p.floor) Toast('کادر پلاک و طبقه را پر کنید');
-    else if(!p.revers.formattedAddress ) Toast("اتصال اینترنتتان را چک کنید");
-    else if(p.plaque && p.floor && p.revers.formattedAddress) _food.payment()
-  }
-
-  const lctn = (
-    < >
-      <View style={styles.containSearch}>
-        <View style={styles.viewSearch}>
-          <Icon
-            onPress={() => { rum(); setshow(true); myRf.current && myRf.current.setNativeProps({ text: '' }); myRf.current.blur() }}
-            name="search" size={20} color="#999" style={{ flex: 1, padding: 10 }} />
-          <TextInput
-            onSubmitEditing={() => { rum(); setshow(true); myRf.current && myRf.current.setNativeProps({ text: '' }); myRf.current.blur() }}
-            textContentType="fullStreetAddress"
-            autoComplete="street-address"
-            ref={myRf}
-            // value={search1}
-            onChangeText={p.setSearch1}
-            placeholder="جستجو"
-            style={styles.search}
-          />
-        </View>
-      </View>
-      <View style={{ flex: 1 }} >
-        <View style={{ flex: 1 }}>
-          <View style={[styles.container, s.cnt]}>
-            <MapView
-              region={p.markers}
-              showsUserLocation={true}
-              style={[styles.map, s.mp]}
-            >
-              <Marker
-                draggable={true}
-                coordinate={p.markers}
-                onDragEnd={(e) => { uy(e); setshow(true) }}
-                onPress={() => { setshow(!show) }}
-              />
-            </MapView>
-            {show && p.revers.formattedAddress &&
-              <View style={styles.containSubtitle}>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }} >
-                  {
-                    p.tokenValue.isAdmin !== 'courier' &&
-                    <>
-                      <View style={{ flexDirection: 'row', justifyContent: 'space-around', flex: .5 }} >
-                        <View style={{ flexDirection: 'row', alignContent: 'center' }} >
-                          <Text style={{ marginRight: 2 }}>پلاک:</Text>
-                          <TextInput value={p.plaque} keyboardType={'numeric'} onChangeText={(text) => p.setplaque(text)} style={{ width: 35, padding: 0, height: 30, borderWidth: .2, textAlign: 'center' }} />
-                        </View>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-around' }} >
-                          <Text style={{ marginRight: 2 }}>طبقه:</Text>
-                          <TextInput value={p.floor} keyboardType={'numeric'} onChangeText={(text) => p.setfloor(text)} style={{ width: 35, padding: 0, height: 30, borderWidth: .2, textAlign: 'center' }} />
-                        </View>
-                      </View>
-                      <View style={{ flex: .4 }} >
-                        <Button onPress={payment}  >صفحه ی پرداخت</Button>
-                      </View>
-                    </>
-                  }
-                </View>
-                {(p.revers && p.revers.streetName != undefined) ? <Text style={{ margin: 3 }} /> : null}
-                <Text style={styles.textSubtitle}>{p.revers && p.revers.formattedAddress?.split(",")[0] + p.revers.formattedAddress?.split(",")[1]}</Text>
-              </View>
-            }
-          </View >
-        </View>
-      </View>
-    </>
-  )
+  const [token, settoken] = useState({})
+  useFocusEffect(useCallback(() => {
+    (async () => {
+      const _token = await AsyncStorage.getItem("token");
+      settoken(_token)
+    })()
+  }, []))
 
   return (
-    <BottomTab route={p.route.name} route2={bottom} >
-          {lctn}
-    </BottomTab>
-  );
+    <View flex={1}>
+      <Frame source={{
+        html: `
+      
+<html>
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="${localhost}/css/bootstrap.css" />
+    <link rel="stylesheet" href="${localhost}/css/leaflet.css" />
+    <link rel="stylesheet" href="${localhost}/css/fontawesome.css" integrity="sha512-PIAUVU8u1vAd0Sz1sS1bFE5F1YjGqm/scQJ+VIUJL9kNa8jtAWFUDMu5vynXPDprRRBqHrE8KKEsjA7z22J1FA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+
+<div style="display: flex; justify-content: flex-end; height: 100%; ">
+
+  <form id="formSearch" onsubmit="submited(event)"
+    style="width:250px;margin: 3px 2px 0 0; display:flex;flex-direction: row-reverse; position: absolute; align-items: flex-end; ">
+    <input onchange="serchInput(event.target.value)" type="text" placeholder="search"
+      style="text-align: right;border-radius: 1px;border: 1px solid rgb(150, 146, 146);display:block;flex-grow: 1;height: 30.5px;position:relative;z-index:1000" />
+    <i onclick="sendIcon()" class="fa fa-search"
+      style="border-radius: 1px;padding: 5px 5px 0px;border: 1px solid rgb(150, 146, 146); background-color: #fff;font-size: 19px;display:block;height: 30px;width: 30px;position:relative;z-index:1000"></i>
+      
+      </form>
+
+      <button id='btnGetLocation' onclick="setLocation()" style='right:2px;background:#fff;padding:2px;border-radius:5px;z-index:10000;position:absolute;top:40px;' >[+]</button>
+    
+      <div id='bottomDiv' style='z-index:10000;position:absolute;bottom:0;display:flex;justify-content:space-around;width:100%;background:#fff;padding:10px 0;flex-direction:row-reverse'>
+      <span style='display:flex;' > <input type='number' style='text-align:center;width:45px;height:40px' id='plaque' /><p style='margin:7px 5px' > :پلاک </p> </span>
+      <span style='display:flex;' > <input type='number' style='text-align:center;width:45px;height:40px' id='floor'/><p style='margin:7px 5px' >:طبقه </p></span>
+      <button id='btnPayment' onclick="sendPayment()" style='border:1px solid #3af;right:2px;background:#3afa;height:42px;width:75px;font-size:15px;border-radius:5px;color:#444' >پرداخت</button>
+      </div>
+
+      
+      <div id="map" style="width:100%; height: 100vh;display:flex;"><div>
+      <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+      <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+      <script src="${localhost}/js/leaflet.js"></script>
+      <script>
+      
+      axios.defaults.headers.post["Content-Type"] = "application/json";
+      axios.defaults.headers.common["Authorization"] = ${JSON.stringify(token)}
+
+      const origin = ${JSON.stringify(p.route.params?.origin)}
+
+      let revers = {}
+
+      document.getElementById('btnPayment').style.display = origin && 'none'
+      document.getElementById('btnGetLocation').style.display = origin && 'none'
+      document.getElementById('formSearch').style.display = origin && 'none'
+      document.getElementById('bottomDiv').style.display = origin && 'none'
+
+
+        function submited(event) {
+          event.preventDefault()
+          sendIcon()
+        }
+        let show = true
+        let search
+
+        function serchInput(text) { search = text }
+
+        
+        let mark = origin?{ lat: origin.latitude, lng: origin.longitude }:{ lat: ${p.region.lat}, lng: ${p.region.lng} }
+        let option = { center: mark, zoom: origin ? 15: 18, }
+        var myIcon = L.icon({ iconUrl: '${localhost}/images/mark.png', iconSize: [38, 95], iconAnchor: [22, 94], popupAnchor: [-3, -76], shadowSize: [68, 95], shadowAnchor: [22, 94], });
+        let markerOption = { draggable: origin?false:true, icon: myIcon }
+
+        var map = L.map('map', option)
+        map.on('click', (ev) => { marker.openPopup() })
+        let marker = L.marker(mark, markerOption).addTo(map)
+        var layer = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+        map.addLayer(layer);
+
+
+
+
+        
+        if(origin){
+        let mark2 = { lat: ${p.region.lat}, lng: ${p.region.lng} }
+        var myIcon2 = L.icon({ iconUrl: '${localhost}/image.png', iconSize: [35, 66], iconAnchor: [22, 94], popupAnchor: [-3, -76], shadowSize: [68, 95], shadowAnchor: [22, 94], });
+        let markerOption2 = { draggable: false, icon: myIcon2 }
+        let marker2 = L.marker(mark2, markerOption2).addTo(map)
+        }
+
+
+
+
+
+        window.addEventListener('load', async (ev) => {
+        if(!region){ 
+           const response = await axios.post('${localhost}/reverse', JSON.stringify(mark),{ headers: { 'Content-Type': 'application/json' } })
+          if (response.status) {
+            const data = await response.data
+            if (data[0]) {
+              const one = (data[0].streetName && data[0].streetName !== data[0].formattedAddress.split(",")[0]) ? data[0].streetName : ''
+              const two = data[0].formattedAddress.split(",")[0] ? data[0].formattedAddress.split(",")[0] : ''
+              const three = data[0].formattedAddress.split(",")[1] ? data[0].formattedAddress.split(",")[1] : ''
+              revers = data[0]
+              const street = one + ' ' + two + ' ' + three
+              marker.bindPopup(street).openPopup()
+
+              setTimeout(()=>{marker.bindPopup(street).openPopup()},1500)
+              
+            }
+          }}
+        })
+
+
+        marker.on('dragend', async (ev) => {
+          map.setView({ lat: ev.target._latlng.lat, lng: ev.target._latlng.lng })
+          const response = await axios.post('${localhost}/reverse', JSON.stringify({ lat: ev.target._latlng.lat, lng: ev.target._latlng.lng }),{ headers: { 'Content-Type': 'application/json' } })
+          if (response.status) {
+            const data = await response.data
+            if (data[0]) {
+              const one = (data[0].streetName && data[0].streetName !== data[0].formattedAddress.split(",")[0]) ? data[0].streetName : ''
+              const two = data[0].formattedAddress.split(",")[0] ? data[0].formattedAddress.split(",")[0] : ''
+              const three = data[0].formattedAddress.split(",")[1] ? data[0].formattedAddress.split(",")[1] : ''
+              revers = data[0]
+              const street = one + ' ' + two + ' ' + three
+              marker.bindPopup(street).openPopup()
+            }
+          }
+        });
+
+
+        async function sendIcon(data) {
+          const response = await fetch('${localhost}/geocode', { method: 'post', body: JSON.stringify({ loc: 'سبزوار' + ' ' + search }), headers: { 'Content-Type': 'application/json' } })
+          if (response.status) {
+            const data = await response.json()
+            if (data[0]) {
+              const one = (data[0].streetName && data[0].streetName !== data[0].formattedAddress.split(",")[0]) ? data[0].streetName : ''
+              const two = data[0].formattedAddress.split(",")[0] ? data[0].formattedAddress.split(",")[0] : ''
+              const three = data[0].formattedAddress.split(",")[1] ? data[0].formattedAddress.split(",")[1] : ''
+              revers = data[0]
+              const street = one + ' ' + two + ' ' + three
+              map.setView({ lat: data[0].latitude, lng: data[0].longitude });
+              marker.setLatLng({ lat: data[0].latitude, lng: data[0].longitude })
+              marker.bindPopup(street.trim() ? street : '!پیدا نشد').openPopup()
+              search = ''
+            }
+            else marker.bindPopup('!پیدا نشد ').openPopup()
+          }
+        }
+
+        function setLocation(){
+          map.setView({ lat: ${p.region.lat}, lng: ${p.region.lng} });
+                marker.setLatLng({ lat: ${p.region.lat}, lng: ${p.region.lng} })
+              
+        }
+
+
+        async function sendPayment(){
+         if(!document.getElementById('plaque').value || !document.getElementById('floor').value) alert('کادر پلاک و طبقه را پر کنید')
+          let {data, status} = await axios.post('${localhost}/confirmpayment?allprice=${p.allprice}', {
+            foods: ${JSON.stringify(p.totalTitle)},
+            plaque: document.getElementById('plaque').value,
+            floor: document.getElementById('floor').value,
+            formattedAddress: JSON.stringify(revers.formattedAddress),
+            streetName: JSON.stringify(revers.streetName),
+            origin: JSON.stringify(revers)
+          })
+
+          if(status === 200) window.location.assign(data)
+          else if(status === 385) alert('کادر پلاک و طبقه را پر کنید')
+          else if(status === 500) alert('مشکلی از سمت سرور پیش آمد')
+
+        }
+
+
+      </script>
+
+    </div>
+
+</html>
+
+      `}} />
+
+    </View>
+  )
 }
 
-const s = StyleSheet.create({
-  cnt: {
-    ...StyleSheet.absoluteFillObject,
-    height: '100%',
-    width: '100%',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-  },
-  mp: {
-    ...StyleSheet.absoluteFillObject,
-  },
-});
-export default Location
+export default Location;

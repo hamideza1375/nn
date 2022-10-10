@@ -1,26 +1,20 @@
 import React from 'react'
 import { Text, View, Image } from 'react-native'
 import Drawer from '../../Components/Drawer'
-import BottomTab from '../../Components/BottomTab'
 import {Button} from '../../Components/Html'
-import { bottomProfile, drawer } from '../../states/top-bottom'
 import styles from './User.scss';
 import B_icon from '../../Components/B_icon';
 import { userState } from '../../state/userState'
 import { _scrollView } from '../food/Home'
-import { localhost } from '../../services/host.json';
+import {localhost} from '../../utils/axios/axios'
 
 const Profile = (p) => {
-
   const _user = new userState(p)
   _user._tokenValue()
   _user.profile()
   const submit = (roomNumber) => p.navigation.navigate('Chat', { roomNumber })
   const imgPicker = () => _user.imagePicker()
-  const bottom = bottomProfile(p)
   return (
-    <Drawer route={p.route.name} route2={drawer} bgcolor="#bbf">
-      <BottomTab route={p.route.name} route2={bottom} bgcolor="#bbf" >
         <View style={{ flex: 1, backgroundColor: '#bbf' }} >
 
           <View style={[styles.headProfile, { height: 167 }]}>
@@ -32,7 +26,7 @@ const Profile = (p) => {
                   <Image source={require("../../assets/images/a8.jpg")} style={styles.profileImage} />
                 }
                 <View style={styles.profileSubText}>
-                  <Text style={styles.textUserImage}>حمید رضا عطار</Text>
+                  <Text style={styles.textUserImage}>{p.tokenValue?.fullname}</Text>
                 </View>
               </View>
             </View>
@@ -41,12 +35,6 @@ const Profile = (p) => {
                 <B_icon icon='comment-slash' size={.85} bgcolor='silver' />
                 <B_icon icon='comment' size={.85} bgcolor='silver' />
                 <B_icon icon='search' size={.85} bgcolor='silver' />
-              </View>
-              <View style={{ paddingTop: 11, paddingBottom: 8 }} >
-                <Text style={{ fontSize: 15, textAlign: 'left', paddingHorizontal: 9, fontWeight: '100' }} >
-                  من کتاب هستند که خواندن دانش باشد به نام تو نامه کی کنم باز
-                  من کتاب هستند که خواندن دانش باشد به نام تو نامه کی کنم باز
-                </Text>
               </View>
             </View>
           </View>
@@ -72,8 +60,6 @@ const Profile = (p) => {
           </View>
 
         </View>
-      </BottomTab>
-    </Drawer>
   )
 }
 export default Profile

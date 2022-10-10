@@ -5,7 +5,7 @@ import Icon from 'react-native-vector-icons/dist/FontAwesome5';
 
 const width = Dimensions.get('window').width;
 
-const Drawer = ({ route2, children, route, bgcolor = '#fff', style, icon }) => {
+const Drawer = ({ group, children, name, bgcolor = '#fff', style, icon }) => {
   const fadeAnim = useRef(new Animated.Value(-width * 2)).current;
   shadowRef=useRef()
   const navigation = useNavigation()
@@ -47,8 +47,8 @@ const Drawer = ({ route2, children, route, bgcolor = '#fff', style, icon }) => {
     <View style={styles.container} >
       <View style={[styles.sidebar, { backgroundColor: bgcolor }, style]} >
         <Text style={styles.TextHeader}></Text>
-        <Text style={styles.TextHeader}>{route}</Text>
-        <Icon onPress={open} name={'bars'} color={'#777'} size={28} />
+        <Text style={styles.TextHeader}>{name}</Text>
+        <Icon onPress={open} name={'bars'} color={'#777'} size={28} style={{padding:2}} />
       </View>
 
       <View style={{flexGrow:1}} >
@@ -59,15 +59,15 @@ const Drawer = ({ route2, children, route, bgcolor = '#fff', style, icon }) => {
       { transform: [{ translateX: fadeAnim }], opacity: hidden }]} >
         <Animated.View ref={shadowRef} onStartShouldSetResponder={close} style={[styles.pressable,{backgroundColor: Background}]} />
         <View style={styles.viewDriver} >
-          {route2.map((r, key) => (
+          {group.map((item, key) => (
             <View key={key} style={styles.routeView} >
               <Pressable
-                onPress={() => { navigation.navigate(r.title); close() }}
-                style={[styles.viewActive, { backgroundColor: route == r.title ? "#ccf9" : "#f5f5f5" }]} >
-                <Text style={[styles.textActive, { color: route == r.title ? "#47f" : "#777" }]}
-                >{r.title}</Text>
+                onPress={() => { navigation.navigate(item); close() }}
+                style={[styles.viewActive, { backgroundColor: name === item? "#ccf9" : "#f5f5f5" }]} >
+                <Text style={[styles.textActive, { color: name === item? "#47f" : "#777" }]}
+                >{item}</Text>
 
-                { icon && <Icon size={21} name="user" color="#777" style={{ color: route == r.title ? "#47e" : "#777" }} /> }
+                { icon && <Icon size={21} name="user" color="#777" style={{ color: name === item? "#47e" : "#777" }} /> }
 
               </Pressable>
             </View>

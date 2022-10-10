@@ -49,7 +49,7 @@
   flex-direction: row;
   flex-direction: row-reverse;
   box-shadow: 0px 0px 10px rgba(235, 103, 27, 0.5);
-align-self: center;
+  align-self: center;
 }
 
 // .textPriceChild {
@@ -231,7 +231,7 @@ align-self: center;
 }
 
 .viewPayTwo {
-  width:100%;
+  width: 100%;
   border-radius: 7px;
   background-color: rgb(18, 142, 243);
   height: 42;
@@ -346,7 +346,7 @@ align-self: center;
   border-radius: 7px;
   width: 80%;
   height: 43px;
-  background-color:red;
+  background-color: red;
   background-color: #f7f7f7;
   align-self: center;
   border: 1px solid rgb(226, 221, 221);
@@ -410,7 +410,7 @@ align-self: center;
 .containform {
   margin-top: 13px;
   width: 90%;
-  height:80%
+  height: 80%
 }
 
 
@@ -458,9 +458,9 @@ align-self: center;
   flex-direction: row;
   justify-content: space-between;
   width: 100%;
-  padding: 5px;
-  box-shadow: 3px 3px 5px #0009;
-  background-color: #fdd;
+  padding: 7px;
+  elevation:10;
+  box-shadow: 1px 1px 1px #0005;
   z-index: 1000;
   align-self: center;
 }
@@ -484,15 +484,15 @@ align-self: center;
 .btnShow {
   margin: 22px 0 10px;
   width: 90%;
-  box-shadow: 1px 1px 6px #0009;
-  background-color: rgba(0, 0, 0, 0.4);
+  elevation:3;
+  box-shadow: 1px 1px 10px #0004;
 }
 
 .cardComment {
   box-shadow: 1px 1px 5px #000a;
 }
 
-.imgCardComment{
+.imgCardComment {
   border-radius: 30px;
   height: 65px;
 }
@@ -548,8 +548,8 @@ align-self: center;
   margin: 0px 37% 0;
   width: 85%;
   justify-content: center;
-  align-self:center;
-  align-items:center
+  align-self: center;
+  align-items: center
 }
 
 .viewCnt {
@@ -566,40 +566,14 @@ align-self: center;
 
 
 
-
-
-// کانتکس api و redux به جز اینکه اضاف کاری داره کثیف کاری هم داره و من میخوام راحت اول prop رو به کامپوننتم بدو و بعد به صورت گلوبال هرجا که بخوام استفاده کنم وای تو کانتکس و ریداکس باید ایمپورت و دیستراکچر کرد
-// برای ویدیو ها توکن بده که با برداشتن لینک نتونن دانلودش کنن
-// کامپوننت مرتبه بالا
+// سایت برای خروجی گرفتن رایگان ios
 // کار با همه متد هارو یادداشت کن
 // تشریحی
-// email
-// debug
-// از وب سرویس برای ارسال پیامک تو گوگا وویس استفاده کن
+
+//!webrtc chat {
+// create like for chat
 // از voice to text تو webrtc
+// phone or email }
 
-// openstreetmap for node and openstreetmap api for react-native
-// send message for login
-// component search
-// component anim
-// test all
-
-// all new map refactor
-
-
-
-
-
-// create file admin in node
-// اسم مناسب برای کامپوننت
-// unmunt state
-
-// ادمین بتونه همه کامنت هارو پاک و ویرایش کنه
-
-// single food component component
-
-// state to context file lovercase
-// json stringefy axios
-
-// setcurent in getallfood
-
+// expo web in mobile
+// debug

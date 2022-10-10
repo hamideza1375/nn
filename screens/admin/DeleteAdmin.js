@@ -1,12 +1,12 @@
 import React from 'react';
 import Form from '../../Components/Form'
-import { userState } from '../../state/userState';
 import { ScrollView, Text, TextInput, View } from 'react-native';
+import { adminState } from '../../state/adminState';
 
 export default DeleteAdmin = (p) => {
-  const _user = new userState(p)
-  const sendDeleteAdmin = () => _user.deleteAdmin()
-  _user.getAlluserAdmin()
+  const _admin = new adminState(p)
+  const sendDeleteAdmin = () => _admin.deleteAdmin()
+  _admin.getAlluserAdmin()
 
   return (
     <ScrollView>

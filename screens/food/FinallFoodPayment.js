@@ -1,14 +1,14 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import { View, Text, TextInput, ScrollView, ImageBackground } from 'react-native'
 import Icon from 'react-native-vector-icons/dist/FontAwesome';
-import Drawer from '../../Components/Drawer'
-import BottomTab from '../../Components/BottomTab'
 import { Button, P, Table } from '../../Components/Html';
 import { foodState } from '../../state/foodState';
-import { drawer, bottomProfile } from '../../states/top-bottom';
 import Loading from '../../Components/Loading'
 import styles from "./Food.scss"
-import { localhost } from '../../services/host.json'
+import {localhost} from '../../utils/axios/axios'
+import spacePrice from '../../utils/spacePrice';
+import GetLocation from 'react-native-get-location';
+import { useFocusEffect } from '@react-navigation/native';
 
 const FinallFoodPayment = (p) => {
   const inputPrice = `${p.allprice ? p.allprice : '0'}`
@@ -18,11 +18,31 @@ const FinallFoodPayment = (p) => {
   const plus = (index, item) => _food.plustNum(index, item)
   const minus = (index, item) => _food.minusNum(index, item)
   const deleteAsyncStorage = () => _food.deleteStorage()
-  const bottom = bottomProfile(p)
   
+
+  useFocusEffect(useCallback(() => {
+
+      GetLocation.getCurrentPosition({
+        enableHighAccuracy: false,
+        timeout: 15000,
+      })
+        .then(location => {
+          p.setregion({
+            lat: location.latitude,
+            lng: location.longitude,
+          })
+
+          console.log(location);
+
+        })
+        .catch(error => {
+          const { code, message } = error;
+          console.warn(code, message);
+        })
+  }, []))
+
+
   return (
-    <Drawer route={p.route.name} route2={drawer} >
-      <BottomTab route={p.route.name} route2={bottom} >
         <View style={styles.viewHead}>
           <View style={styles.viewOne}>
             <View style={styles.viewConseal} >
@@ -39,11 +59,11 @@ const FinallFoodPayment = (p) => {
                     header={['جمع', 'عنوان']}
                     body={['total', 'title']}
                     object={allfood}
-                    AllPrice={_food.AllPrice}
+                    AllPrice={spacePrice}
                   />
                   <View style={{}}>
                     <P fontSize={13.5} border={[.5]} style={{ height: 33, flex: 1, textAlign: 'center', alignSelf: 'center', width: '99%' }} >قیمت کل: </P>
-                    <P fontSize={13.5} border={[.5]} style={{ height: 33, flex: 1, textAlign: 'center', alignSelf: 'center', width: '99%' }} >{_food.AllPrice(inputPrice, null)} ت</P>
+                    <P fontSize={13.5} border={[.5]} style={{ height: 33, flex: 1, textAlign: 'center', alignSelf: 'center', width: '99%' }} >{spacePrice(inputPrice, null)} ت</P>
                   </View>
                 </ScrollView>
               }
@@ -79,7 +99,7 @@ const FinallFoodPayment = (p) => {
                         </View>
                         <View style={styles.textPrice}>
                           <Text style={{ textAlign: 'left' }} >قیمت:</Text>
-                          <Text style={{ fontSize: 13 }} >{_food.AllPrice(item.price, null)} <Text style={{ fontSize: 12 }}>ت</Text></Text>
+                          <Text style={{ fontSize: 13 }} >{spacePrice(item.price, null)} <Text style={{ fontSize: 12 }}>ت</Text></Text>
                         </View>
                       </View>
                     </View>
@@ -91,8 +111,6 @@ const FinallFoodPayment = (p) => {
             </View>
           </View>
         </View >
-      </BottomTab>
-    </Drawer >
   )
 }
 export default FinallFoodPayment

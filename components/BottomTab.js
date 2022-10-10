@@ -1,30 +1,41 @@
-import React from 'react'
-import { View, StyleSheet, Pressable, Platform } from 'react-native'
+import React, { useCallback, useState } from 'react'
+import { View, StyleSheet, Pressable, Keyboard, Platform } from 'react-native'
 import Icon from 'react-native-vector-icons/dist/FontAwesome';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 
-const Drawer = ({ route2, children, route, style, bgcolor = '#fff', color = "#777", activeColor = "#47f" }) => {
+const Drawer = ({ group, children, name, style, bgcolor = '#fff', color = "#777", activeColor = "#47f" }) => {
   const navigation = useNavigation()
+  const [show, setshow] = useState(true)
+
+  useFocusEffect(useCallback(() => {
+  if(Platform.OS === 'android'){  
+    try {
+      Keyboard.removeAllListeners('keyboardDidShow')
+      Keyboard.removeAllListeners('keyboardDidHide')
+      Keyboard.addListener(('keyboardDidShow'), () => setshow(false))
+      Keyboard.addListener(('keyboardDidHide'), () => setshow(true))
+    } catch (error) {}   
+  }
+  }, []))
+
 
   return (
     <View style={styles.container} >
-
-      <View style={{flexGrow:1}} >
-      {children}
+      <View style={{ flexGrow: 1 }} >
+        {children}
       </View>
 
-
-      <View opacity={1} style={[styles.sidebar, { backgroundColor: bgcolor }, style]} >
-        {route2.map((r, key) => (
+      {show && <View opacity={1} style={[styles.sidebar, { backgroundColor: bgcolor }, style]} >
+        {group.map((r, key) => (
           <View key={key} style={[styles.routeView, { backgroundColor: 'transparent', }]} >
             <Pressable
-              onPressIn={() => { navigation.navigate( r.navigate ?  r.navigate : r.title ) }}
+              onPressIn={() => {navigation.navigate(r.navigate ? r.navigate : r.title) }}
               style={[styles.pressableActive, { backgroundColor: 'transparent' }]} >
-              <Icon name={r.icon} size={26} style={{ color: route == r.title ? activeColor : color }} />
+              <Icon name={r.icon} size={26} style={{ color: name == r.title ? activeColor : color }} />
             </Pressable>
           </View>
         ))}
-      </View>
+      </View>}
     </View>
   )
 }
@@ -39,8 +50,8 @@ const styles = StyleSheet.create({
 
   },
   sidebar: {
-    height:'8%',
-    minHeight:38,
+    height: '8%',
+    minHeight: 38,
     bottom: 0,
     // position: 'absolute',
     flexDirection: 'row',

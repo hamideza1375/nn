@@ -3,7 +3,7 @@ import { View, Text, Image, Pressable } from 'react-native';
 
 function Card(prop) {
 
-  const { style, header, body, footer, bgcolor, color, alert, border, img, direction = 'rtl', imageStyle } = prop
+  const { style, header, body, footer, bgcolor, color, alert, border, img, dr = 'rtl', imageStyle, headerRow } = prop
 
   return !img ? ((
     !alert ?
@@ -40,7 +40,7 @@ function Card(prop) {
         }, style]}>
         <View style={{ padding: 12, alignItems: 'flex-start', }} >
           {header &&
-            <View style={{ width: '100%', paddingVertical: 12, paddingHorizontal:5, }}>
+            <View style={{ width: '100%', paddingVertical: 12, paddingHorizontal: 5, }}>
               <Text
                 style={[{
                   color:
@@ -57,13 +57,13 @@ function Card(prop) {
                   fontWeight: '700',
                   fontSize: 15,
                   width: '100%',
-                },,direction === 'rtl' ? { textAlign: 'right' } : { textAlign: 'left' }]}>
+                }, dr === 'rtl' ? { textAlign: 'right' } : { textAlign: 'left' }]}>
                 {header}
               </Text>
             </View>
           }
           {body &&
-            <View style={{ paddingVertical: 12, paddingHorizontal:5,width:'100%' }}>
+            <View style={{ paddingVertical: 12, paddingHorizontal: 5, width: '100%' }}>
               <Text style={[{
                 color:
                   !color ?
@@ -77,14 +77,14 @@ function Card(prop) {
                       "#333"
                     :
                     color,
-              },,direction === 'rtl' ? { textAlign: 'right' } : { textAlign: 'left' }]} >
+              }, dr === 'rtl' ? { textAlign: 'right' } : { textAlign: 'left' }]} >
                 {body}
               </Text>
             </View>
           }
           {footer &&
-              <View style={[{ paddingBottom:5,color, width: '100%' }]}><Text style={{ textAlign: 'center' }} >{footer}</Text></View>
-            }
+            <View style={[{ paddingBottom: 5, color, width: '100%' }]}><Text style={{ textAlign: 'center' }} >{footer}</Text></View>
+          }
         </View>
       </Pressable>
       :
@@ -120,7 +120,7 @@ function Card(prop) {
           }, style]}>
           <View style={{ padding: 12, alignItems: 'flex-start', }} >
             {header &&
-              <View style={{ width: '100%', paddingVertical: 12, paddingHorizontal:5}}>
+              <View style={{ width: '100%', paddingVertical: 12, paddingHorizontal: 5 }}>
                 <Text
                   style={[{
                     color:
@@ -128,17 +128,17 @@ function Card(prop) {
                     fontWeight: '700',
                     fontSize: 15,
                     width: '100%',
-                  },direction === 'rtl' ? { textAlign: 'right' } : { textAlign: 'left' }]}>
+                  }, dr === 'rtl' ? { textAlign: 'right' } : { textAlign: 'left' }]}>
                   {header}
                 </Text>
               </View>
             }
             {body &&
-              <View style={{ paddingVertical: 12, paddingHorizontal:5, width:'100%' }}>
+              <View style={{ paddingVertical: 12, paddingHorizontal: 5, width: '100%' }}>
                 <Text style={[{
                   color:
                     !color ? 'black' : color,
-                },direction === 'rtl' ? { textAlign: 'right' } : { textAlign: 'left' }]} >
+                }, dr === 'rtl' ? { textAlign: 'right' } : { textAlign: 'left' }]} >
                   {body}
                 </Text>
               </View>
@@ -170,7 +170,7 @@ function Card(prop) {
           <Pressable
             {...prop}
             style={[{
-              borderWidth: 1, borderRadius: 5, minHeight: 115,width: '100%', position: 'relative',
+              borderWidth: 1, borderRadius: 5, minHeight: 115, width: '100%', position: 'relative',
               borderColor:
                 !border && (
                   !bgcolor && '#fbb' ||
@@ -195,13 +195,13 @@ function Card(prop) {
                 bgcolor == 'white' && '#fff' ||
                 bgcolor
               ,
-              
+
             }, style]}>
-            <View style={[{ padding: 12,  }]} >
+            <View style={[{ padding: 12, }]} >
               {header &&
                 <View style={[{
-                  paddingHorizontal:5,paddingVertical:12,width:'70%'
-                },direction === 'rtl' ? { alignSelf: 'flex-end', } : { alignSelf: 'flex-start' }]}>
+                  paddingHorizontal: 5, paddingVertical: 12, width: '70%'
+                }, dr === 'rtl' ? { alignSelf: 'flex-end', } : { alignSelf: 'flex-start' }]}>
                   <Text
                     style={[{
                       color:
@@ -220,11 +220,43 @@ function Card(prop) {
                       fontSize: 15,
                       width: '100%',
                       textAlign: 'left'
-                    }, direction === 'rtl' ? { textAlign: 'right' } : { textAlign: 'left' }]}>
+                    }, dr === 'rtl' ? { textAlign: 'right' } : { textAlign: 'left' }]}>
                     {header}
                   </Text>
                 </View>
               }
+
+
+
+
+              {headerRow &&
+                <View style={[{
+                  paddingHorizontal: 5, paddingVertical: 12, width: '70%'
+                }, dr === 'rtl' ? { alignSelf: 'flex-end', } : { alignSelf: 'flex-start' }]}>
+                  <View
+                    style={[{
+                      color:
+                        !color ?
+
+                          bgcolor ?
+                            (bgcolor == 'white') && 'black' ||
+                            (bgcolor == 'silver') && 'black' ||
+                            (color) && color ||
+                            'white'
+                            :
+                            "#333"
+                          :
+                          color,
+                      fontWeight: '700',
+                      fontSize: 15,
+                      width: '100%',
+                      textAlign: 'left'
+                    }, dr === 'rtl' ? { textAlign: 'right' } : { textAlign: 'left' }]}>
+                    {headerRow}
+                  </View>
+                </View>
+              }
+
 
 
               <View style={[{
@@ -232,24 +264,24 @@ function Card(prop) {
                 position: 'absolute',
                 height: 90,
                 justifyContent: 'center',
-              }, direction === 'rtl' ? { left: 5 } : { right: 5 }]} >
+              }, dr === 'rtl' ? { left: 5 } : { right: 5 }]} >
                 <Image source={img} style={[{
                   width: 70,
                   height: 70,
                   borderRadius: 50,
                   alignSelf: 'center',
-                },imageStyle]}
+                }, imageStyle]}
                 />
                 {footer &&
-                  <View style={[{ paddingVertical:5, color, width: '100%' }, direction === 'rtl' ? { alignSelf: 'flex-start' } : { alignSelf: 'flex-end' }]}><Text style={{ textAlign: 'center' }} >{footer}</Text></View>
+                  <View style={[{ paddingVertical: 5, color, width: '100%' }, dr === 'rtl' ? { alignSelf: 'flex-start' } : { alignSelf: 'flex-end' }]}><Text style={{ textAlign: 'center' }} >{footer}</Text></View>
                 }
               </View>
 
 
               {body &&
                 <View style={[{
-                  paddingHorizontal:5,paddingVertical:12,width:'70%'
-                },direction === 'rtl' ? { alignSelf: 'flex-end', } : { alignSelf: 'flex-start' }]}>
+                  paddingHorizontal: 5, paddingVertical: 12, width: '79.4%'
+                }, dr === 'rtl' ? { alignSelf: 'flex-end', } : { alignSelf: 'flex-start' }]}>
                   <Text style={[{
                     color:
                       !color ?
@@ -263,7 +295,7 @@ function Card(prop) {
                           "#333"
                         :
                         color,
-                  }, direction === 'rtl' ? { textAlign: 'right', } : { textAlign: 'left' }]} >
+                  }, dr === 'rtl' ? { textAlign: 'right', } : { textAlign: 'left' }]} >
                     {body}
                   </Text>
                 </View>
@@ -283,7 +315,7 @@ function Card(prop) {
             <Pressable
               {...prop}
               style={[{
-                borderWidth: 1, borderRadius: 5, minHeight: 115,width: '100%', position: 'relative',
+                borderWidth: 1, borderRadius: 5, minHeight: 115, width: '100%', position: 'relative',
                 borderColor:
                   !border && (
                     !bgcolor && '#fdb' ||
@@ -311,8 +343,8 @@ function Card(prop) {
               <View style={{ padding: 12 }} >
                 {header &&
                   <View style={[{
-                    paddingHorizontal:5,paddingVertical:12,width:'70%'
-                  },direction === 'rtl' ? { alignSelf: 'flex-end', } : { alignSelf: 'flex-start' }]}>
+                    paddingHorizontal: 5, paddingVertical: 12, width: '70%'
+                  }, dr === 'rtl' ? { alignSelf: 'flex-end', } : { alignSelf: 'flex-start' }]}>
                     <Text
                       style={[{
                         color:
@@ -320,38 +352,60 @@ function Card(prop) {
                         fontWeight: '700',
                         fontSize: 15,
                         width: '100%',
-                      }, direction === 'rtl' ? { textAlign: 'right' } : { textAlign: 'left' }]}>
+                      }, dr === 'rtl' ? { textAlign: 'right' } : { textAlign: 'left' }]}>
                       {header}
                     </Text>
                   </View>
                 }
+
+
+
+                {headerRow &&
+                  <View style={[{
+                    paddingHorizontal: 5, paddingVertical: 12, width: '70%'
+                  }, dr === 'rtl' ? { alignSelf: 'flex-end', } : { alignSelf: 'flex-start' }]}>
+                    <View
+                      style={[{
+                        color:
+                          !color ? 'black' : color,
+                        fontWeight: '700',
+                        fontSize: 15,
+                        width: '100%',
+                      }, dr === 'rtl' ? { textAlign: 'right' } : { textAlign: 'left' }]}>
+                      {headerRow}
+                    </View>
+                  </View>
+                }
+
+
+
 
                 <View style={[{
                   top: 12,
                   position: 'absolute',
                   height: 90,
                   justifyContent: 'center',
-                }, direction === 'rtl' ? { left: 5 } : { right: 5 }]} >
+                }, dr === 'rtl' ? { left: 5 } : { right: 5 }]} >
                   <Image source={img} style={[{
                     width: 70,
                     height: 70,
                     borderRadius: 50,
                     alignSelf: 'center',
-                  },imageStyle]}
+                  }, imageStyle]}
                   />
                   {footer &&
-                    <View style={[{ paddingVertical: 5, color, width: '100%' }, direction === 'rtl' ? { alignSelf: 'flex-start' } : { alignSelf: 'flex-end' }]}><Text style={{ textAlign: 'center' }} >{footer}</Text></View>
+                    <View style={[{ paddingVertical: 5, color, width: '100%' }, dr === 'rtl' ? { alignSelf: 'flex-start' } : { alignSelf: 'flex-end' }]}><Text style={{ textAlign: 'center' }} >{footer}</Text></View>
                   }
                 </View>
 
                 {body &&
                   <View style={[{
-                    paddingHorizontal:5,paddingVertical:12,width:'70%'
-                  },direction === 'rtl' ? { alignSelf: 'flex-end', } : { alignSelf: 'flex-start' }]}>
+                    paddingHorizontal: 5, paddingVertical: 12, width: '79.4%'
+                  }, dr === 'rtl' ? { alignSelf: 'flex-end', } : { alignSelf: 'flex-start' }]}>
                     <Text style={[{
                       color:
                         !color ? 'black' : color,
-                    }, direction === 'rtl' ? { textAlign: "right" } : { textAlign: "left" }]} >
+                    }, dr === 'rtl' ? { textAlign: "right" } : { textAlign: "left" }]} >
                       {body}
                     </Text>
                   </View>

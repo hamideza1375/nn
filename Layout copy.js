@@ -15,16 +15,9 @@ export const Layout = (props) => {
   const drawer = ['FinallFoodPayment', 'Profile', 'Logout']
   const topUser = ['Register', 'Login']
   let bottom = (props.tokenValue.isAdmin !== 'courier') ?
-    ([{ title: 'Home', icon: 'home', navigate: null }, 
-    props.token ? 
-    { title: (props._key == '100') ?
-     props.route.name : 'Profile', icon: 'user', navigate:props.route.name === 'FinallFoodPayment' || props.route.name ===  'Profile' || props.route.name ===  'Logout'?props.route.name: props.navigateProfile }
-     :
-      { title: (props._key == '120') ?
-       props.route.name : 'Register', icon: 'user', navigate:props.route.name === 'Login'|| props.route.name === 'Register'?props.route.name: props.navigateUser }])
+    ([{ title: 'Home', icon: 'home', navigate: null }, props.token ? { title: (props._key == '100') ? props.route.name : 'Profile', icon: 'user', navigate: props.navigateProfile } : { title: (props._key == '120') ? props.route.name : 'Register', icon: 'user', navigate: props.navigateUser }])
     :
-    (props.token ? []
-       : [{ title: 'Home', icon: 'home', navigate: null }, { title: (props._key == '120') ? props.route.name : 'Register', icon: 'user', navigate: props.navigateUser }])
+    (props.token ? [] : [{ title: 'Home', icon: 'home', navigate: null }, { title: (props._key == '120') ? props.route.name : 'Register', icon: 'user', navigate: props.navigateUser }])
 
   return (
     props.route.name === 'Profile' || props.route.name === 'FinallFoodPayment' | props.route.name === 'Login' | props.route.name === 'Register' | props.route.name === 'Home' ?

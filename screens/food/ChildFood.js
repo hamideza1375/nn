@@ -5,9 +5,10 @@ import Icon4 from 'react-native-vector-icons/FontAwesome';
 import FastImage from 'react-native-fast-image';
 import { foodState } from '../../state/foodState';
 import styles from "./Food.scss"
-import { localhost } from '../../services/host.json'
+import {localhost} from '../../utils/axios/axios'
 import Pagination from '../../Components/Pagination';
 import Loading from '../../Components/Loading'
+import spacePrice from '../../utils/spacePrice';
 
 let styleScroll = {}
 let numColumns = 2
@@ -55,7 +56,7 @@ const ChildFood = (p) => {
           <Loading />
           :
           <FlatList
-          // initialNumToRender={4}
+          initialNumToRender={3}
             numColumns={numColumns}
             key={numColumns}
             keyExtractor={(f) => f && f._id.toString()}
@@ -81,7 +82,7 @@ const ChildFood = (p) => {
                   <Text style={styles.textTitleChild}>{item.title}</Text>
                   <View style={styles.ViewSubItem}>
                     <View style={{ paddingRight: 3, top: 2 }} >
-                      <Text style={[{ fontSize: 13.5, textAlign: 'left' }]}>قیمت:{_food.AllPrice(item.price)}</Text>
+                      <Text style={[{ fontSize: 13.5, textAlign: 'left' }]}>قیمت:{spacePrice(item.price)}</Text>
                       <View style={{ top: 12, flexDirection: 'row', alignSelf: 'flex-end' }} >
                         {item.meanStar >= 5 && <Icon4 name='star' size={17} color='orange' />}
                         {item.meanStar > 4 && item.meanStar < 5 && <Icon4 name='star-half' size={17} color='orange' />}
@@ -155,7 +156,7 @@ const ChildFood = (p) => {
           <Text style={styles.titleSubTitle} >مشاهده ی سبد و پرداخت</Text>
           <View style={styles.containSubPrice}>
             <Text style={styles.textPayment}>قیمت کل :</Text>
-            <Text style={[styles.smalPrice, { top: 10 }]} >{_food.AllPrice(inputPrice)} تومان</Text>
+            <Text style={[styles.smalPrice, { top: 10 }]} >{spacePrice(inputPrice)} تومان</Text>
           </View>
         </View>
       </Pressable>

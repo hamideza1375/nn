@@ -2,7 +2,7 @@
 import React from 'react'
 import { WebView } from 'react-native-webview'
 
-const Fream = (props) => {
+const Frame = (props) => {
     return (
         <>
             <WebView {...props} />
@@ -10,4 +10,4 @@ const Fream = (props) => {
     )
 }
 
-export default Fream
+export default Frame
